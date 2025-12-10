@@ -1,1 +1,1 @@
-# jamesmorris1.github.io
+# jamemorr technical blog
