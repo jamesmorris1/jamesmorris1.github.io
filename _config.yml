@@ -3,3 +3,10 @@ plugins:
 - jekyll-remote-theme # add this line to the plugins list if you already have one
 title: jamemorr - technical blog
 description: a technical blog focusing mainly on VCF content
+navigation:
+  - title: Home
+    url: /
+  - title: About
+    url: /about
+  - title: Articles
+    url: /articles
