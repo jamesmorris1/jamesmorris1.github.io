@@ -4,10 +4,10 @@ plugins:
 title: jamemorr - technical blog
 description: a technical blog focusing mainly on VCF content
 navigation:
-  - title: Home
-    url: /
   - title: About
     url: /about
   - title: Articles
     url: /articles
+  - title: Series
+    url: /series
 linkedin_url: https://www.linkedin.com/in/jamemorr/
