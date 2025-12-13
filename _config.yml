@@ -1,11 +1,11 @@
 remote_theme: pages-themes/cayman@v0.2.0
 plugins:
-- jekyll-remote-theme # add this line to the plugins list if you already have one
+- jekyll-remote-theme
 title: jamemorr - technical blog
 description: a technical blog focusing mainly on VCF content
 navigation:
   - title: About
-    url: /about
+    url: /
   - title: Articles
     url: /articles
   - title: Series
