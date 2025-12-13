@@ -57,68 +57,68 @@ title: Series
 </style>
 
 <div class="series-box">
-  <h3 onclick="toggleSeries('vcf-networking')">
-    VCF Multi-Tenant Networking Deep Dive
-    <span class="toggle-icon" id="icon-vcf-networking">▼</span>
-  </h3>
-  <p class="series-description">
-    A comprehensive series exploring VMware Cloud Foundation's multi-tenant networking architecture, breaking down how VCF constructs map to NSX-T components.
-  </p>
-  
-  <div class="series-details" id="vcf-networking">
-    <h4>Articles in this series:</h4>
-    <ul>
-      <li>
-        <strong>Part 1: Provider Gateway vs NSX-T Tier-0: Understanding the Foundation</strong> <span class="coming-soon">(Coming Soon)</span>
-        <ul>
-          <li>What is a Provider Gateway in VCF</li>
-          <li>How it maps to Tier-0 gateways</li>
-          <li>Edge cluster connectivity</li>
-          <li>BGP peering configuration</li>
-        </ul>
-      </li>
-      
-      <li>
-        <strong>Part 2: IP Spaces and IP Blocks: VCF's Address Management</strong> <span class="coming-soon">(Coming Soon)</span>
-        <ul>
-          <li>What are IP Spaces</li>
-          <li>IP Block allocation and reachability</li>
-          <li>Provider vs Organization IP allocations</li>
-          <li>Best practices for IP planning</li>
-        </ul>
-      </li>
-      
-      <li>
-        <strong>Part 3: Transit Gateway: The Organization's Routing Hub</strong> <span class="coming-soon">(Coming Soon)</span>
-        <ul>
-          <li>What the Transit Gateway does</li>
-          <li>SNAT configuration and external connectivity</li>
-          <li>Private-TGW IP blocks explained</li>
-          <li>Connecting multiple VPCs</li>
-        </ul>
-      </li>
-      
-      <li>
-        <strong>Part 4: VPC and Subnets: Building Tenant Networks</strong> <span class="coming-soon">(Coming Soon)</span>
-        <ul>
-          <li>Private VPC construct in VCF</li>
-          <li>VPC Gateway role</li>
-          <li>Subnet carving and allocation</li>
-          <li>Isolation and security boundaries</li>
-        </ul>
-      </li>
-      
-      <li>
-        <strong>Part 5: Provider vs Organization: Network Creation Responsibilities</strong> <span class="coming-soon">(Coming Soon)</span>
-        <ul>
-          <li>Clear separation of duties</li>
-          <li>What providers must configure</li>
-          <li>What organizations control</li>
-          <li>Complete network flow walkthrough</li>
-        </ul>
-      </li>
-    </ul>
-  </div>
+<h3 onclick="toggleSeries('vcf-networking')">
+VCF Multi-Tenant Networking Deep Dive
+<span class="toggle-icon" id="icon-vcf-networking">▼</span>
+</h3>
+<p class="series-description">
+A comprehensive series exploring VMware Cloud Foundation's multi-tenant networking architecture, breaking down how VCF constructs map to NSX-T components.
+</p>
+
+<div class="series-details" id="vcf-networking">
+<h4>Articles in this series:</h4>
+<ul>
+<li>
+<strong>Part 1: Provider Gateway vs NSX-T Tier-0: Understanding the Foundation</strong> <span class="coming-soon">(Coming Soon)</span>
+<ul>
+<li>What is a Provider Gateway in VCF</li>
+<li>How it maps to Tier-0 gateways</li>
+<li>Edge cluster connectivity</li>
+<li>BGP peering configuration</li>
+</ul>
+</li>
+
+<li>
+<strong>Part 2: IP Spaces and IP Blocks: VCF's Address Management</strong> <span class="coming-soon">(Coming Soon)</span>
+<ul>
+<li>What are IP Spaces</li>
+<li>IP Block allocation and reachability</li>
+<li>Provider vs Organization IP allocations</li>
+<li>Best practices for IP planning</li>
+</ul>
+</li>
+
+<li>
+<strong>Part 3: Transit Gateway: The Organization's Routing Hub</strong> <span class="coming-soon">(Coming Soon)</span>
+<ul>
+<li>What the Transit Gateway does</li>
+<li>SNAT configuration and external connectivity</li>
+<li>Private-TGW IP blocks explained</li>
+<li>Connecting multiple VPCs</li>
+</ul>
+</li>
+
+<li>
+<strong>Part 4: VPC and Subnets: Building Tenant Networks</strong> <span class="coming-soon">(Coming Soon)</span>
+<ul>
+<li>Private VPC construct in VCF</li>
+<li>VPC Gateway role</li>
+<li>Subnet carving and allocation</li>
+<li>Isolation and security boundaries</li>
+</ul>
+</li>
+
+<li>
+<strong>Part 5: Provider vs Organization: Network Creation Responsibilities</strong> <span class="coming-soon">(Coming Soon)</span>
+<ul>
+<li>Clear separation of duties</li>
+<li>What providers must configure</li>
+<li>What organizations control</li>
+<li>Complete network flow walkthrough</li>
+</ul>
+</li>
+</ul>
+</div>
 </div>
 
 <script>
