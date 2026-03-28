@@ -11,3 +11,9 @@ navigation:
   - title: Series
     url: /series
 linkedin_url: https://www.linkedin.com/in/jamemorr/
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
