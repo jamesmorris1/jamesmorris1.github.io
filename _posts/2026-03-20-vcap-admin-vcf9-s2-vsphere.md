@@ -4,6 +4,8 @@ title: "VCAP-ADMIN VCF 9.0 — vSphere Compute, Network & Security: Objectives 4
 date: 2026-03-20
 categories: [certification, vcf, vcap]
 tags: [vcap, vcf9, vsphere, 3v0-11-26, study-guide]
+series: "VCAP-ADMIN VCF 9.0 Study Guide (3V0-11.26)"
+series_part: 2
 ---
 
 # Section: vSphere Compute, Network & Security — Objectives 4.10–4.18
@@ -12,7 +14,7 @@ Part of the [VCAP-ADMIN VCF 9.0 Study Guide series]({% post_url 2026-03-20-vcap-
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.10 — Configure vSphere Advanced Settings within a VCF Workload Domain</strong></summary>
 
 ### Key Concepts
@@ -59,7 +61,7 @@ Setting to 0 disables `vpxuser` password rotation entirely. This is sometimes do
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.11 — Manage Virtual Machines within a VCF Workload Domain</strong></summary>
 
 ### Key Concepts
@@ -101,7 +103,7 @@ VCF 9 / vSphere 9 introduces new VM hardware versions — ensure templates use t
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.12 — Configure Advanced Network Operations within a VCF Workload Domain</strong></summary>
 
 ### Key Concepts
@@ -161,7 +163,7 @@ Identifies MTU mismatches, VLAN mismatches, and teaming policy inconsistencies.
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.13 — Optimize CPU Performance in a VCF Workload Domain</strong></summary>
 
 ### Key Concepts
@@ -216,7 +218,7 @@ Set BIOS to **OS Controlled Mode** so ESX manages CPU power states (C-states and
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.14 — Optimize Memory Performance in a VCF Workload Domain</strong></summary>
 
 ### Key Concepts
@@ -278,7 +280,7 @@ esxcli system tierdevice create -d /vmfs/devices/disks/<nvme-device>
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.15 — Optimize the Performance of vCenter Server</strong></summary>
 
 ### Key Concepts
@@ -341,7 +343,7 @@ Monitor VCSA resource usage, database health, and disk usage at `https://<vcsa-f
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.16 — Monitor vSphere Components within a VCF Workload Domain</strong></summary>
 
 ### Key Concepts
@@ -419,7 +421,7 @@ Or via vSphere Client: `Host > Configure > System > Advanced System Settings > S
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.17 — Configure vSphere Security and Access Control in VCF</strong></summary>
 
 ### Key Concepts
@@ -492,7 +494,7 @@ New-VIPermission -Entity (Get-VM "WebServer01") -Principal "domain\vmoperators" 
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.18 — Configure VM Encryption and vSphere Trusted Environments</strong></summary>
 
 ### Key Concepts

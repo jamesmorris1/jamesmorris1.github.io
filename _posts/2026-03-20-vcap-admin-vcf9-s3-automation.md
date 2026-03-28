@@ -4,6 +4,8 @@ title: "VCAP-ADMIN VCF 9.0 — VCF Automation Provider & Org: Objectives 4.19–
 date: 2026-03-20
 categories: [certification, vcf, vcap]
 tags: [vcap, vcf9, vcf-automation, 3v0-11-26, study-guide]
+series: "VCAP-ADMIN VCF 9.0 Study Guide (3V0-11.26)"
+series_part: 3
 ---
 
 # Section: VCF Automation — Provider & Organisation Management — Objectives 4.19–4.29
@@ -12,7 +14,7 @@ Part of the [VCAP-ADMIN VCF 9.0 Study Guide series]({% post_url 2026-03-20-vcap-
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.19 — Configure the Identity Provider for the Provider Management Portal</strong></summary>
 
 ### Key Concepts
@@ -59,7 +61,7 @@ When migrating from one IdP to another, use **Remap Users** to preserve roles an
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.20 — Create and Manage Provider Content Libraries within the Provider Management Portal</strong></summary>
 
 ### Key Concepts
@@ -115,7 +117,7 @@ POST https://<vcfa-fqdn>/cloudapi/1.0.0/catalogs/<urn>/refresh
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.21 — Configure Access Control Settings within the Provider Management Portal</strong></summary>
 
 ### Key Concepts
@@ -184,7 +186,7 @@ JIT-provisioned users must **attempt a login first** before their account exists
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.22 — Create a New Organisation in the Provider Management Portal</strong></summary>
 
 ### Key Concepts
@@ -223,7 +225,7 @@ Local users (non-IdP, non-SSO) in VCF Automation have limited capabilities. All 
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.23 — Enable and Configure a Provider Consumption Organisation (PCO)</strong></summary>
 
 ### Key Concepts
@@ -258,7 +260,7 @@ Once the PCO has catalog items, the provider publishes them to target orgs:
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.24 — Configure Identity Providers within a VCF All Apps Organisation</strong></summary>
 
 ### Key Concepts
@@ -297,7 +299,7 @@ Import users/groups from the IdP and assign org-level roles.
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.25 — Configure Access Control within a VCF All Apps Organisation</strong></summary>
 
 ### Key Concepts
@@ -330,7 +332,7 @@ Content Sharing Policies (a governance policy type) control catalog item visibil
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.26 — Create and Manage Projects within a VCF All Apps Organisation</strong></summary>
 
 ### Key Concepts
@@ -369,7 +371,7 @@ A single VPC can be associated with multiple projects — this enables shared ne
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.27 — Create and Manage Governance Policies within a VCF All Apps Organisation</strong></summary>
 
 ### Key Concepts
@@ -429,7 +431,7 @@ YAML-based governance policies for resources provisioned via the self-service Ia
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.28 — Configure Namespace Classes within a VCF All Apps Organisation</strong></summary>
 
 ### Key Concepts
@@ -463,7 +465,7 @@ Namespace Classes are associated with projects. A project can use multiple Names
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.29 — Create and Manage VPCs and VPC Connectivity Profiles within a VCF All Apps Organisation</strong></summary>
 
 ### Key Concepts

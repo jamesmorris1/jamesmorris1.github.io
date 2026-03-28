@@ -4,6 +4,8 @@ title: "VCAP-ADMIN VCF 9.0 — vSAN: Objectives 4.1–4.9"
 date: 2026-03-20
 categories: [certification, vcf, vcap]
 tags: [vcap, vcf9, vsan, 3v0-11-26, study-guide]
+series: "VCAP-ADMIN VCF 9.0 Study Guide (3V0-11.26)"
+series_part: 1
 ---
 
 # Section: vSAN — Objectives 4.1–4.9
@@ -12,7 +14,7 @@ Part of the [VCAP-ADMIN VCF 9.0 Study Guide series]({% post_url 2026-03-20-vcap-
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.1 — Deploy a vSAN Cluster within a VCF Workload Domain</strong></summary>
 
 ### Key Concepts
@@ -56,7 +58,7 @@ In VCF 9, vSAN is the default storage platform for workload domains. When deploy
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.2 — Deploy a vSAN Stretched Cluster</strong></summary>
 
 ### Key Concepts
@@ -101,7 +103,7 @@ Witness vmkernel (`vmk` tagged `witness`) must be routable to the witness host. 
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.3 — Configure Non-vSAN Storage within a VCF Workload Domain</strong></summary>
 
 ### Key Concepts
@@ -143,7 +145,7 @@ VCF supports supplemental storage types alongside vSAN for workload domains. Non
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.4 — Configure vSAN Cross-Cluster Services / Capacity Sharing</strong></summary>
 
 ### Key Concepts
@@ -185,7 +187,7 @@ VMs running on the client cluster and using the remote datastore are governed by
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.5 — Configure vSAN Encryption</strong></summary>
 
 ### Key Concepts
@@ -227,7 +229,7 @@ Same path > Data-In-Transit Encryption toggle. This encrypts host-to-host vSAN t
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.6 — Configure vSAN Data Protection</strong></summary>
 
 ### Key Concepts
@@ -268,7 +270,7 @@ Requires:
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.7 — Perform Day 2 Operations on a vSAN Cluster</strong></summary>
 
 ### Key Concepts
@@ -320,7 +322,7 @@ Manual rebalance redistributes data more evenly across disks. Automatic rebalanc
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.8 — Perform Day 2 Operations on a vSAN Stretched Cluster</strong></summary>
 
 ### Key Concepts
@@ -367,7 +369,7 @@ Ensure VMs use a policy with `PFTT=1` (Primary Failures to Tolerate between site
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.9 — Manage vSAN Storage Policies</strong></summary>
 
 ### Key Concepts

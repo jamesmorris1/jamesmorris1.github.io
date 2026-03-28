@@ -4,6 +4,8 @@ title: "VCAP-ADMIN VCF 9.0 — Supervisor & VKS: Objectives 4.30–4.34"
 date: 2026-03-20
 categories: [certification, vcf, vcap]
 tags: [vcap, vcf9, supervisor, vks, kubernetes, 3v0-11-26, study-guide]
+series: "VCAP-ADMIN VCF 9.0 Study Guide (3V0-11.26)"
+series_part: 4
 ---
 
 # Section: Supervisor & VKS — Objectives 4.30–4.34
@@ -12,7 +14,7 @@ Part of the [VCAP-ADMIN VCF 9.0 Study Guide series]({% post_url 2026-03-20-vcap-
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.30 — Deploy and Configure a Supervisor Cluster</strong></summary>
 
 ### Key Concepts
@@ -72,7 +74,7 @@ esxcli software vib list | grep spherelet
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.31 — Install, Uninstall, and Manage Supervisor Add-on Services (e.g., Harbor, external-dns)</strong></summary>
 
 ### Key Concepts
@@ -159,7 +161,7 @@ kubectl get addonrepositoryinstall -n vmware-system-vks-public
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.32 — Perform Rolling Updates and Configuration Changes on VKS Clusters</strong></summary>
 
 ### Key Concepts
@@ -233,7 +235,7 @@ kubectl get cluster CLUSTER-NAME -o json | jq '.status.conditions[] | select(.ty
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.33 — Manage Package Repositories, Standard Packages, Registry Secrets, and Private Registries</strong></summary>
 
 ### Key Concepts
@@ -311,7 +313,7 @@ Then update `AddonRepository` to point to the internal registry URL.
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.34 — Upgrade a Supervisor Service or VKS Cluster</strong></summary>
 
 ### Key Concepts

@@ -4,6 +4,8 @@ title: "VCAP-ADMIN VCF 9.0 — NSX: Objectives 4.48–4.60"
 date: 2026-03-20
 categories: [certification, vcf, vcap]
 tags: [vcap, vcf9, nsx, 3v0-11-26, study-guide]
+series: "VCAP-ADMIN VCF 9.0 Study Guide (3V0-11.26)"
+series_part: 6
 ---
 
 # Section: NSX — Objectives 4.48–4.60
@@ -12,7 +14,7 @@ Part of the [VCAP-ADMIN VCF 9.0 Study Guide series]({% post_url 2026-03-20-vcap-
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.48 — Deploy NSX Federation (Global Manager)</strong></summary>
 
 ### Key Concepts
@@ -53,7 +55,7 @@ NSX multi-tenancy (Projects feature, objective 4.58) is **NOT supported** in an 
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.49 — Configure NSX Components</strong></summary>
 
 ### Key Concepts
@@ -99,7 +101,7 @@ In VCF 9, NSX uses the vSphere vDS as the host switch (not a separate N-VDS). Th
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.50 — Deploy an NSX Edge Cluster</strong></summary>
 
 ### Key Concepts
@@ -149,7 +151,7 @@ A T0 gateway is associated with an Edge Cluster. The Edge Cluster provides the t
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.51 — Create an NSX Tier-0 Gateway</strong></summary>
 
 ### Key Concepts
@@ -200,7 +202,7 @@ Steps:
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.52 — Configure NSX VRF on a Tier-0 Gateway</strong></summary>
 
 ### Key Concepts
@@ -242,7 +244,7 @@ VRF-to-VRF route leaking can be configured if specific routes need to be shared 
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.53 — Create an NSX Logical Segment</strong></summary>
 
 ### Key Concepts
@@ -289,7 +291,7 @@ VLAN segments use a VLAN ID or range. They connect to physical VLANs on the unde
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.54 — Create an NSX Tier-1 Gateway</strong></summary>
 
 ### Key Concepts
@@ -338,7 +340,7 @@ Common route advertisement settings:
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.55 — Deploy and Manage a VPC in NSX</strong></summary>
 
 ### Key Concepts
@@ -386,7 +388,7 @@ VPCs don't auto-populate DNS — configure DNS servers in the **VPC Service Prof
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.56 — Configure DHCP within NSX</strong></summary>
 
 ### Key Concepts
@@ -437,7 +439,7 @@ Distributed Transit Gateway (DTGW) does **NOT support DHCP Relay**. Use CTGW (Ce
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.57 — Configure NAT Use Cases within NSX</strong></summary>
 
 ### Key Concepts
@@ -484,7 +486,7 @@ Fields: Action (SNAT/DNAT/etc.), Source Match (IP/range), Destination Match (IP/
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.58 — Configure NSX Projects and Tenancy</strong></summary>
 
 ### Key Concepts
@@ -535,7 +537,7 @@ VPCs can only be created **within an NSX Project** — VPCs do not exist in the 
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.59 — Configure Advanced NSX Integrations</strong></summary>
 
 ### Key Concepts
@@ -591,7 +593,7 @@ NSX registers with VCF Operations using a **Principal Identity certificate** —
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.60 — Perform NSX Operational Tasks (Syslog, Backup)</strong></summary>
 
 ### Key Concepts

@@ -4,6 +4,9 @@ title: "VCAP-ADMIN VCF 9.0 (3V0-11.26) — Complete Study Guide Index"
 date: 2026-03-20
 categories: [certification, vcf, vcap]
 tags: [vcap, vcf9, 3v0-11-26, broadcom, vmware, study-guide]
+series: "VCAP-ADMIN VCF 9.0 Study Guide (3V0-11.26)"
+series_part: 0
+series_description: "Complete study notes covering all 60 blueprint objectives for the VCAP VMware Cloud Foundation Administrator exam, across vSAN, vSphere, VCF Automation, Supervisor/VKS, VCF Operations, and NSX."
 ---
 
 # VCAP-ADMIN VCF 9.0 (3V0-11.26) — Complete Study Guide

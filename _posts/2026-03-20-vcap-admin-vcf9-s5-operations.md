@@ -4,6 +4,8 @@ title: "VCAP-ADMIN VCF 9.0 — VCF Operations & Fleet: Objectives 4.35–4.47"
 date: 2026-03-20
 categories: [certification, vcf, vcap]
 tags: [vcap, vcf9, vcf-operations, fleet-management, 3v0-11-26, study-guide]
+series: "VCAP-ADMIN VCF 9.0 Study Guide (3V0-11.26)"
+series_part: 5
 ---
 
 # Section: VCF Operations & Fleet Management — Objectives 4.35–4.47
@@ -12,7 +14,7 @@ Part of the [VCAP-ADMIN VCF 9.0 Study Guide series]({% post_url 2026-03-20-vcap-
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.35 — Perform VCF Operations Day 2 Tasks</strong></summary>
 
 ### Key Concepts
@@ -53,7 +55,7 @@ For NSX syslog to VCF Operations for Logs: configure NSX **Node Profiles** → s
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.36 — Reclaim Resources using VCF Operations</strong></summary>
 
 ### Key Concepts
@@ -96,7 +98,7 @@ VMDKs in datastores that are not associated with any registered VM. Must verify 
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.37 — Rightsize Workloads using VCF Operations</strong></summary>
 
 ### Key Concepts
@@ -136,7 +138,7 @@ Rightsizing memory down on a VM with memory limits already set may cause unexpec
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.38 — Perform Capacity Forecasting What-If Scenarios</strong></summary>
 
 ### Key Concepts
@@ -181,7 +183,7 @@ VCF Operations uses historical trend data to project when capacity will be exhau
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.39 — Configure Cost Management in VCF Operations</strong></summary>
 
 ### Key Concepts
@@ -233,7 +235,7 @@ Cost data can be segmented by Business Groups (mapped to VCF Operations groups/t
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.40 — Create, Update, and Apply a VCF Operations Policy</strong></summary>
 
 ### Key Concepts
@@ -280,7 +282,7 @@ Changes to a policy apply immediately to all objects governed by that policy. No
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.41 — Configure Business Intent and Operational Intent</strong></summary>
 
 ### Key Concepts
@@ -325,7 +327,7 @@ To configure Operational Intent, the VCF Operations user must have **WLP Setting
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.42 — Create Business Applications in VCF Operations</strong></summary>
 
 ### Key Concepts
@@ -373,7 +375,7 @@ Requires VCF Operations for Networks integration. Traffic flows between VMs are 
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.43 — Configure Alerts in VCF Operations</strong></summary>
 
 ### Key Concepts
@@ -419,7 +421,7 @@ Connect VCF Operations to notification systems via:
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.44 — Scale Fleet Management Lifecycle Components</strong></summary>
 
 ### Key Concepts
@@ -456,7 +458,7 @@ Scaling VCF Operations for Logs:
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.45 — Upgrade VCF Fleet Components using Fleet Management</strong></summary>
 
 ### Key Concepts
@@ -505,7 +507,7 @@ Fleet Management runs pre-checks before starting an upgrade. ERROR-level pre-che
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.46 — Configure VCF SSO using Identity and Access Management</strong></summary>
 
 ### Key Concepts
@@ -554,7 +556,7 @@ Groups can be dynamically created based on SAML assertion attributes on first lo
 
 ---
 
-<details>
+<details markdown="1">
 <summary><strong>4.47 — Monitor Configuration Drift using VCF Operations</strong></summary>
 
 ### Key Concepts
