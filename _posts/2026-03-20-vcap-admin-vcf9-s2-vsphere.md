@@ -14,548 +14,822 @@ Part of the [VCAP-ADMIN VCF 9.0 Study Guide series]({% post_url 2026-03-20-vcap-
 
 ---
 
-<details markdown="1">
+<details>
 <summary><strong>4.10 — Configure vSphere Advanced Settings within a VCF Workload Domain</strong></summary>
-
-### Key Concepts
-
-Advanced settings in VCF workload domains span vCenter and ESXi host-level parameters. These are configured outside the standard wizard flows — via vSphere Client advanced settings panels or PowerCLI.
-
-**Key vCenter advanced settings:**
-
-| Setting | Purpose | Default |
-|---|---|---|
-| `VirtualCenter.VimPasswordExpirationInDays` | Controls `vpxuser` password rotation interval on ESXi hosts | 30 days |
-| `config.vpxd.stats.maxQueryMetrics` | Limits metrics returned per stats API query (prevents monitoring tool overload) | 64 |
-| `config.vpxd.heartbeat.notRespondingTimeout` | How long before vCenter marks a host non-responsive | 60s |
-| `VPXD_PersistVnuma` | Retains vNUMA topology across vMotion for consistent NUMA performance | false |
-
-**Path:** `vCenter > Configure > Settings > Advanced Settings`
-
-**Key ESXi advanced settings:**
-
-| Setting | Purpose |
-|---|---|
-| `DCUI.Access` | Comma-separated list of local users who can access DCUI even in lockdown mode |
-| `Syslog.global.logHost` | Syslog target (e.g., `udp://loghost:514`) |
-| `UserVars.SuppressShellWarning` | Suppresses SSH shell warning in vSphere Client |
-| `Net.TcpipHeapSize` | TCP/IP heap size for VMkernel networking |
-
-**Path:** `vSphere Client > Host > Configure > System > Advanced System Settings`
-
-**Host Profiles in VCF:**
-Host Profiles enforce consistent configuration across all hosts in a cluster. In VCF 9, SDDC Manager uses host profiles internally for cluster conformance. You can also create and apply custom host profiles for workload domain clusters.
-
-`vSphere Client > Home > Policies and Profiles > Host Profiles > Extract Profile from Host`
-
-**VirtualCenter.VimPasswordExpirationInDays = 0:**
-Setting to 0 disables `vpxuser` password rotation entirely. This is sometimes done in environments where external KMS or security tooling manages credentials externally. Not recommended unless there is an explicit security exception.
-
-### Exam Decision Points
-- `VimPasswordExpirationInDays = 0` disables host password rotation — hosts may get disconnected if set to a low value and rotation fails
-- `DCUI.Access` can include only **local ESXi users** (not AD users)
-- `VPXD_PersistVnuma` is configured at the **cluster level** (Advanced Settings), not per-host
-- `maxQueryMetrics` is the go-to setting when monitoring tools are causing vCenter slowness
-
+<div class="details-body">
+<h3>Key Concepts</h3>
+<p>Advanced settings in VCF workload domains span vCenter and ESXi host-level parameters. These are configured outside the standard wizard flows — via vSphere Client advanced settings panels or PowerCLI.</p>
+<p><strong>Key vCenter advanced settings:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Purpose</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>VirtualCenter.VimPasswordExpirationInDays</code></td>
+<td>Controls <code>vpxuser</code> password rotation interval on ESXi hosts</td>
+<td>30 days</td>
+</tr>
+<tr>
+<td><code>config.vpxd.stats.maxQueryMetrics</code></td>
+<td>Limits metrics returned per stats API query (prevents monitoring tool overload)</td>
+<td>64</td>
+</tr>
+<tr>
+<td><code>config.vpxd.heartbeat.notRespondingTimeout</code></td>
+<td>How long before vCenter marks a host non-responsive</td>
+<td>60s</td>
+</tr>
+<tr>
+<td><code>VPXD_PersistVnuma</code></td>
+<td>Retains vNUMA topology across vMotion for consistent NUMA performance</td>
+<td>false</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Path:</strong> <code>vCenter &gt; Configure &gt; Settings &gt; Advanced Settings</code></p>
+<p><strong>Key ESXi advanced settings:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DCUI.Access</code></td>
+<td>Comma-separated list of local users who can access DCUI even in lockdown mode</td>
+</tr>
+<tr>
+<td><code>Syslog.global.logHost</code></td>
+<td>Syslog target (e.g., <code>udp://loghost:514</code>)</td>
+</tr>
+<tr>
+<td><code>UserVars.SuppressShellWarning</code></td>
+<td>Suppresses SSH shell warning in vSphere Client</td>
+</tr>
+<tr>
+<td><code>Net.TcpipHeapSize</code></td>
+<td>TCP/IP heap size for VMkernel networking</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Path:</strong> <code>vSphere Client &gt; Host &gt; Configure &gt; System &gt; Advanced System Settings</code></p>
+<p><strong>Host Profiles in VCF:</strong><br />
+Host Profiles enforce consistent configuration across all hosts in a cluster. In VCF 9, SDDC Manager uses host profiles internally for cluster conformance. You can also create and apply custom host profiles for workload domain clusters.</p>
+<p><code>vSphere Client &gt; Home &gt; Policies and Profiles &gt; Host Profiles &gt; Extract Profile from Host</code></p>
+<p><strong>VirtualCenter.VimPasswordExpirationInDays = 0:</strong><br />
+Setting to 0 disables <code>vpxuser</code> password rotation entirely. This is sometimes done in environments where external KMS or security tooling manages credentials externally. Not recommended unless there is an explicit security exception.</p>
+<h3>Exam Decision Points</h3>
+<ul>
+<li><code>VimPasswordExpirationInDays = 0</code> disables host password rotation — hosts may get disconnected if set to a low value and rotation fails</li>
+<li><code>DCUI.Access</code> can include only <strong>local ESXi users</strong> (not AD users)</li>
+<li><code>VPXD_PersistVnuma</code> is configured at the <strong>cluster level</strong> (Advanced Settings), not per-host</li>
+<li><code>maxQueryMetrics</code> is the go-to setting when monitoring tools are causing vCenter slowness</li>
+</ul>
+</div>
 </details>
 
 ---
 
-<details markdown="1">
+<details>
 <summary><strong>4.11 — Manage Virtual Machines within a VCF Workload Domain</strong></summary>
-
-### Key Concepts
-
-Day-to-day VM management in a VCF workload domain uses standard vSphere mechanisms, but there are VCF-specific considerations around content libraries, templates, and lifecycle.
-
-**VM Templates and Content Libraries:**
-- Content Libraries store OVA/OVF templates and ISO images
-- Preferred template workflow in VCF: publish OVA to a Content Library, deploy VMs from it (ensures consistent, version-controlled images)
-- `vSphere Client > Content Libraries > [Library] > OVF & OVA Templates > Deploy`
-
-**Snapshots:**
-- Snapshots capture VM state at a point in time (memory optional)
-- On vSAN: snapshots use sparse delta VMDKs (OSA) or native block snapshots (ESA)
-- Best practice: limit snapshot chains — multiple snapshots degrade write performance
-- Delete snapshots via `VM > Snapshots > Snapshot Manager > Delete All` to consolidate
-
-**Clones:**
-- Full clone: independent copy; `Right-click VM > Clone > Clone to Virtual Machine`
-- Linked clone: shares base VMDK with parent; smaller disk but parent dependency
-- In VCF, prefer deploying from Content Library OVA over manual cloning
-
-**vMotion in VCF:**
-- Requires shared storage or vSAN (always shared in VCF workload domains)
-- vMotion network must be configured on all hosts (`vmk` tag: `vmotion`)
-- Enhanced vMotion: live migrate VM + storage simultaneously across hosts/datastores
-
-**VM Hardware Version:**
-VCF 9 / vSphere 9 introduces new VM hardware versions — ensure templates use the correct hardware version for the target vSphere version. Higher hardware versions enable new features (new device types, vNUMA improvements) but reduce compatibility with older vCenter.
-
-### Exam Decision Points
-- Content Library OVA deployment = **preferred** approach for consistent VMs in VCF
-- Snapshot chains > 3 deep = performance degradation warning
-- Linked clones are **not supported** for vSAN in all configurations — use with caution
-- vMotion requires vmkernel tagged `vmotion` on all participating hosts
-- Hardware version is tied to the vSphere version — do not downgrade hardware version
-
+<div class="details-body">
+<h3>Key Concepts</h3>
+<p>Day-to-day VM management in a VCF workload domain uses standard vSphere mechanisms, but there are VCF-specific considerations around content libraries, templates, and lifecycle.</p>
+<p><strong>VM Templates and Content Libraries:</strong></p>
+<ul>
+<li>Content Libraries store OVA/OVF templates and ISO images</li>
+<li>Preferred template workflow in VCF: publish OVA to a Content Library, deploy VMs from it (ensures consistent, version-controlled images)</li>
+<li><code>vSphere Client &gt; Content Libraries &gt; [Library] &gt; OVF &amp; OVA Templates &gt; Deploy</code></li>
+</ul>
+<p><strong>Snapshots:</strong></p>
+<ul>
+<li>Snapshots capture VM state at a point in time (memory optional)</li>
+<li>On vSAN: snapshots use sparse delta VMDKs (OSA) or native block snapshots (ESA)</li>
+<li>Best practice: limit snapshot chains — multiple snapshots degrade write performance</li>
+<li>Delete snapshots via <code>VM &gt; Snapshots &gt; Snapshot Manager &gt; Delete All</code> to consolidate</li>
+</ul>
+<p><strong>Clones:</strong></p>
+<ul>
+<li>Full clone: independent copy; <code>Right-click VM &gt; Clone &gt; Clone to Virtual Machine</code></li>
+<li>Linked clone: shares base VMDK with parent; smaller disk but parent dependency</li>
+<li>In VCF, prefer deploying from Content Library OVA over manual cloning</li>
+</ul>
+<p><strong>vMotion in VCF:</strong></p>
+<ul>
+<li>Requires shared storage or vSAN (always shared in VCF workload domains)</li>
+<li>vMotion network must be configured on all hosts (<code>vmk</code> tag: <code>vmotion</code>)</li>
+<li>Enhanced vMotion: live migrate VM + storage simultaneously across hosts/datastores</li>
+</ul>
+<p><strong>VM Hardware Version:</strong><br />
+VCF 9 / vSphere 9 introduces new VM hardware versions — ensure templates use the correct hardware version for the target vSphere version. Higher hardware versions enable new features (new device types, vNUMA improvements) but reduce compatibility with older vCenter.</p>
+<h3>Exam Decision Points</h3>
+<ul>
+<li>Content Library OVA deployment = <strong>preferred</strong> approach for consistent VMs in VCF</li>
+<li>Snapshot chains &gt; 3 deep = performance degradation warning</li>
+<li>Linked clones are <strong>not supported</strong> for vSAN in all configurations — use with caution</li>
+<li>vMotion requires vmkernel tagged <code>vmotion</code> on all participating hosts</li>
+<li>Hardware version is tied to the vSphere version — do not downgrade hardware version</li>
+</ul>
+</div>
 </details>
 
 ---
 
-<details markdown="1">
+<details>
 <summary><strong>4.12 — Configure Advanced Network Operations within a VCF Workload Domain</strong></summary>
-
-### Key Concepts
-
-"Advanced network operations" in vSphere exam language refers to post-deployment vDS features beyond basic port group and uplink configuration.
-
-**Network I/O Control (NIOC):**
-Allocates bandwidth guarantees and shares across traffic types on the vDS.
-
-`vSphere Client > [vDS] > Configure > Resource Allocation > System Traffic`
-
-Traffic categories: vSAN, vMotion, Management, VM traffic, iSCSI, NFS, vSphere Replication, HBR.
-- **Shares** — relative weighting during contention
-- **Reservation** — guaranteed bandwidth (Mbps) — must not exceed physical capacity
-- **Limit** — hard cap (Mbps)
-
-NIOC v3 (vSphere 7+) allows per-VM traffic shaping in addition to system traffic.
-
-**LACP (Link Aggregation Control Protocol):**
-Bundles multiple physical NICs into a single logical uplink for higher bandwidth and redundancy.
-- In VCF, LACP-enabled vDS **must be created via SDDC Manager API** — not through the GUI wizard
-- Post-deployment LACP LAG configuration: `vDS > Configure > Link Aggregation Groups > Add`
-- LAG must be added to the host's uplink configuration and associated with a port group teaming policy
-
-**Port Mirroring:**
-Mirrors traffic from source ports/VMs to a destination port for monitoring/security tools (e.g., IDS sensors).
-`vDS > Configure > Port Mirroring > New Session`
-
-Session types:
-- **Distributed Port Mirroring** — source and destination on same vDS
-- **Remote Mirroring Source** — sends encapsulated frames to a remote destination
-- **Encapsulated Remote Mirroring** — sends to IP destination (RSPAN equivalent)
-
-**Private VLANs (PVLANs):**
-Subdivide a VLAN into isolated segments while sharing the same IP subnet.
-
-PVLAN port types:
-- **Promiscuous** — can communicate with all ports in the PVLAN (gateway port)
-- **Isolated** — can only communicate with promiscuous port; not to other isolated or community
-- **Community** — can communicate within its community group and with promiscuous port
-
-`vDS > Configure > Private VLAN > Add` (define primary and secondary PVLANs)
-
-**vDS Health Check:**
-Validates physical switch configuration matches vDS expectations.
-`vDS > Configure > Health Check > Edit` — enable VLAN/MTU and Teaming/Failover checks.
-Identifies MTU mismatches, VLAN mismatches, and teaming policy inconsistencies.
-
-### Exam Decision Points
-- LACP in VCF = **must use SDDC Manager API** for workload domain creation
-- NIOC reservation must not exceed total physical NIC capacity
-- PVLAN **Isolated** ports cannot communicate with each other — only with Promiscuous
-- Port Mirroring sessions have a **bandwidth impact** on the source host — monitor overhead
-- vDS Health Check requires physical switch to support LLDP or CDP — verify support
-
+<div class="details-body">
+<h3>Key Concepts</h3>
+<p>"Advanced network operations" in vSphere exam language refers to post-deployment vDS features beyond basic port group and uplink configuration.</p>
+<p><strong>Network I/O Control (NIOC):</strong><br />
+Allocates bandwidth guarantees and shares across traffic types on the vDS.</p>
+<p><code>vSphere Client &gt; [vDS] &gt; Configure &gt; Resource Allocation &gt; System Traffic</code></p>
+<p>Traffic categories: vSAN, vMotion, Management, VM traffic, iSCSI, NFS, vSphere Replication, HBR.</p>
+<ul>
+<li><strong>Shares</strong> — relative weighting during contention</li>
+<li><strong>Reservation</strong> — guaranteed bandwidth (Mbps) — must not exceed physical capacity</li>
+<li><strong>Limit</strong> — hard cap (Mbps)</li>
+</ul>
+<p>NIOC v3 (vSphere 7+) allows per-VM traffic shaping in addition to system traffic.</p>
+<p><strong>LACP (Link Aggregation Control Protocol):</strong><br />
+Bundles multiple physical NICs into a single logical uplink for higher bandwidth and redundancy.<br />
+- In VCF, LACP-enabled vDS <strong>must be created via SDDC Manager API</strong> — not through the GUI wizard<br />
+- Post-deployment LACP LAG configuration: <code>vDS &gt; Configure &gt; Link Aggregation Groups &gt; Add</code><br />
+- LAG must be added to the host's uplink configuration and associated with a port group teaming policy</p>
+<p><strong>Port Mirroring:</strong><br />
+Mirrors traffic from source ports/VMs to a destination port for monitoring/security tools (e.g., IDS sensors).<br />
+<code>vDS &gt; Configure &gt; Port Mirroring &gt; New Session</code></p>
+<p>Session types:</p>
+<ul>
+<li><strong>Distributed Port Mirroring</strong> — source and destination on same vDS</li>
+<li><strong>Remote Mirroring Source</strong> — sends encapsulated frames to a remote destination</li>
+<li><strong>Encapsulated Remote Mirroring</strong> — sends to IP destination (RSPAN equivalent)</li>
+</ul>
+<p><strong>Private VLANs (PVLANs):</strong><br />
+Subdivide a VLAN into isolated segments while sharing the same IP subnet.</p>
+<p>PVLAN port types:</p>
+<ul>
+<li><strong>Promiscuous</strong> — can communicate with all ports in the PVLAN (gateway port)</li>
+<li><strong>Isolated</strong> — can only communicate with promiscuous port; not to other isolated or community</li>
+<li><strong>Community</strong> — can communicate within its community group and with promiscuous port</li>
+</ul>
+<p><code>vDS &gt; Configure &gt; Private VLAN &gt; Add</code> (define primary and secondary PVLANs)</p>
+<p><strong>vDS Health Check:</strong><br />
+Validates physical switch configuration matches vDS expectations.<br />
+<code>vDS &gt; Configure &gt; Health Check &gt; Edit</code> — enable VLAN/MTU and Teaming/Failover checks.<br />
+Identifies MTU mismatches, VLAN mismatches, and teaming policy inconsistencies.</p>
+<h3>Exam Decision Points</h3>
+<ul>
+<li>LACP in VCF = <strong>must use SDDC Manager API</strong> for workload domain creation</li>
+<li>NIOC reservation must not exceed total physical NIC capacity</li>
+<li>PVLAN <strong>Isolated</strong> ports cannot communicate with each other — only with Promiscuous</li>
+<li>Port Mirroring sessions have a <strong>bandwidth impact</strong> on the source host — monitor overhead</li>
+<li>vDS Health Check requires physical switch to support LLDP or CDP — verify support</li>
+</ul>
+</div>
 </details>
 
 ---
 
-<details markdown="1">
+<details>
 <summary><strong>4.13 — Optimize CPU Performance in a VCF Workload Domain</strong></summary>
-
-### Key Concepts
-
-CPU optimization operates at host, cluster, and VM levels. The primary reference is the **vSphere 9.0 Performance Best Practices** guide.
-
-**NUMA Awareness:**
-Modern multi-socket servers have NUMA (Non-Uniform Memory Access) — memory local to a CPU socket is faster than remote memory. ESX NUMA scheduling keeps vCPUs and their memory on the same NUMA node.
-
-- VMs with fewer vCPUs than a single NUMA node = **single NUMA node scheduling** (optimal)
-- VMs wider than a NUMA node = **Wide VMs** — ESX schedules across nodes but with overhead
-- Keep VMs at or below physical core count per NUMA node where possible
-
-**vNUMA (Virtual NUMA):**
-Exposes NUMA topology to the guest OS so NUMA-aware applications (SQL Server, Java, etc.) can allocate memory on the correct node.
-
-> ⚠️ **Enabling CPU Hot-Add disables vNUMA** — the guest OS sees a flat UMA topology. This is a common exam gotcha. Hot-Add trades NUMA performance for online flexibility.
-
-**Latency Sensitivity:**
-Setting a VM's Latency Sensitivity to **High** gives each vCPU exclusive access to a physical CPU core — no sharing with other VMs or VMkernel threads.
-
-- Requires **full CPU and memory reservations** on the VM
-- Achieves near-zero CPU ready time
-- Disables some DRS-based balancing
-- Use for: financial trading, real-time analytics, telco NFV workloads
-
-**DRS CPU Optimization:**
-- Migration Threshold: 1 (most aggressive) to 5 (conservative) — tune for workload sensitivity
-- DRS at level 3 (default) is suitable for most workloads
-- Monitor: `%RDY` per VM in esxtop — if consistently > 5%, CPU contention is impacting performance
-
-**Key esxtop CPU counters:**
-
-| Counter | Meaning | Threshold |
-|---|---|---|
-| `%RDY` | Time vCPU waited for physical CPU | > 5% is concerning |
-| `%CSTP` | Co-stop — SMP VMs waiting for all vCPUs | > 3% is concerning |
-| `%MLMTD` | CPU limit hit — artificial throttling | Any % = misconfiguration |
-| `%USED` | Actual CPU utilization | Monitor trend |
-
-**Host power management:**
-Set BIOS to **OS Controlled Mode** so ESX manages CPU power states (C-states and P-states). ESX default policy = Balanced. For latency-sensitive: set to Maximum Performance (disables C-states).
-
-### Exam Decision Points
-- Hot-Add enabled → vNUMA disabled → guest sees flat UMA → potential NUMA penalty
-- Latency Sensitivity High → requires **full reservations** on CPU and memory
-- `%RDY > 5%` = CPU contention; `%CSTP > 3%` = SMP scheduling issue
-- `%MLMTD > 0%` = CPU limit is throttling the VM — remove or raise the limit
-- Wide VMs (vCPUs > cores per NUMA node) = NUMA penalty — resize or accept overhead
-
+<div class="details-body">
+<h3>Key Concepts</h3>
+<p>CPU optimization operates at host, cluster, and VM levels. The primary reference is the <strong>vSphere 9.0 Performance Best Practices</strong> guide.</p>
+<p><strong>NUMA Awareness:</strong><br />
+Modern multi-socket servers have NUMA (Non-Uniform Memory Access) — memory local to a CPU socket is faster than remote memory. ESX NUMA scheduling keeps vCPUs and their memory on the same NUMA node.</p>
+<ul>
+<li>VMs with fewer vCPUs than a single NUMA node = <strong>single NUMA node scheduling</strong> (optimal)</li>
+<li>VMs wider than a NUMA node = <strong>Wide VMs</strong> — ESX schedules across nodes but with overhead</li>
+<li>Keep VMs at or below physical core count per NUMA node where possible</li>
+</ul>
+<p><strong>vNUMA (Virtual NUMA):</strong><br />
+Exposes NUMA topology to the guest OS so NUMA-aware applications (SQL Server, Java, etc.) can allocate memory on the correct node.</p>
+<blockquote>
+<p>⚠️ <strong>Enabling CPU Hot-Add disables vNUMA</strong> — the guest OS sees a flat UMA topology. This is a common exam gotcha. Hot-Add trades NUMA performance for online flexibility.</p>
+</blockquote>
+<p><strong>Latency Sensitivity:</strong><br />
+Setting a VM's Latency Sensitivity to <strong>High</strong> gives each vCPU exclusive access to a physical CPU core — no sharing with other VMs or VMkernel threads.</p>
+<ul>
+<li>Requires <strong>full CPU and memory reservations</strong> on the VM</li>
+<li>Achieves near-zero CPU ready time</li>
+<li>Disables some DRS-based balancing</li>
+<li>Use for: financial trading, real-time analytics, telco NFV workloads</li>
+</ul>
+<p><strong>DRS CPU Optimization:</strong></p>
+<ul>
+<li>Migration Threshold: 1 (most aggressive) to 5 (conservative) — tune for workload sensitivity</li>
+<li>DRS at level 3 (default) is suitable for most workloads</li>
+<li>Monitor: <code>%RDY</code> per VM in esxtop — if consistently &gt; 5%, CPU contention is impacting performance</li>
+</ul>
+<p><strong>Key esxtop CPU counters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Counter</th>
+<th>Meaning</th>
+<th>Threshold</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%RDY</code></td>
+<td>Time vCPU waited for physical CPU</td>
+<td>&gt; 5% is concerning</td>
+</tr>
+<tr>
+<td><code>%CSTP</code></td>
+<td>Co-stop — SMP VMs waiting for all vCPUs</td>
+<td>&gt; 3% is concerning</td>
+</tr>
+<tr>
+<td><code>%MLMTD</code></td>
+<td>CPU limit hit — artificial throttling</td>
+<td>Any % = misconfiguration</td>
+</tr>
+<tr>
+<td><code>%USED</code></td>
+<td>Actual CPU utilization</td>
+<td>Monitor trend</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Host power management:</strong><br />
+Set BIOS to <strong>OS Controlled Mode</strong> so ESX manages CPU power states (C-states and P-states). ESX default policy = Balanced. For latency-sensitive: set to Maximum Performance (disables C-states).</p>
+<h3>Exam Decision Points</h3>
+<ul>
+<li>Hot-Add enabled → vNUMA disabled → guest sees flat UMA → potential NUMA penalty</li>
+<li>Latency Sensitivity High → requires <strong>full reservations</strong> on CPU and memory</li>
+<li><code>%RDY &gt; 5%</code> = CPU contention; <code>%CSTP &gt; 3%</code> = SMP scheduling issue</li>
+<li><code>%MLMTD &gt; 0%</code> = CPU limit is throttling the VM — remove or raise the limit</li>
+<li>Wide VMs (vCPUs &gt; cores per NUMA node) = NUMA penalty — resize or accept overhead</li>
+</ul>
+</div>
 </details>
 
 ---
 
-<details markdown="1">
+<details>
 <summary><strong>4.14 — Optimize Memory Performance in a VCF Workload Domain</strong></summary>
-
-### Key Concepts
-
-vSphere uses a hierarchy of memory reclamation techniques when hosts are under memory pressure. Understanding the order and tradeoffs is essential.
-
-**Memory Reclamation Hierarchy (in order, least to most disruptive):**
-
-1. **Transparent Page Sharing (TPS)** — deduplicates identical memory pages. Since vSphere 6.0, inter-VM TPS is **disabled by default** for security. TPS only occurs within a single VM (intra-VM). Cannot be relied upon for cross-VM memory savings.
-
-2. **Ballooning** — VMware Tools balloon driver inflates inside the guest, pressuring the guest OS to reclaim its own pages (using guest's native memory management). Requires VMware Tools. Performance is close to native under memory pressure.
-
-3. **Memory Compression** — before swapping, ESX compresses pages into a compression cache (2KB compressed = stored in RAM cache instead of swap). Faster than disk swap.
-
-4. **Host-Level Swapping** — VMkernel swaps pages to disk (`.vswp` file on datastore). Worst performance. If using SSD-backed swap cache (`/scratch`), significantly better than HDD swap.
-
-> ⚠️ **Avoid overcommitment that causes regular host swapping** — this is the primary goal of memory management.
-
-**Memory Tiering over NVMe (vSphere 9.0 — New Feature):**
-NVMe devices can serve as a second memory tier. Cold pages are staged to NVMe instead of traditional swap.
-
-- Requires high-performance NVMe: ≥100,000 IOPS write, ≥3 DWPD endurance
-- Configuration: ESXCLI to designate NVMe device, then enable at cluster level
-- Host must be in **Maintenance Mode** to enable/disable/reconfigure tiering
-- **Suspend-to-memory is NOT supported** when Memory Tiering is active (suspend-to-disk still works)
-- Optane PMem (NVDIMM) is **not supported** in vSphere 9.0 — must be removed
-
-```bash
-# Designate NVMe device for memory tiering
-esxcli system tierdevice create -d /vmfs/devices/disks/<nvme-device>
-```
-
-**Key esxtop memory counters:**
-
-| Counter | Meaning |
-|---|---|
-| `MCTLSZ` | Balloon driver active size (MB) |
-| `SWCUR` | Current swap usage (MB) |
-| `ZIP/s` | Pages being compressed per second |
-| `UNZIP/s` | Pages decompressed per second |
-| `GRANT` | Memory granted to VM |
-
-**Memory Reservations vs Limits vs Shares:**
-- **Reservation** — guaranteed memory; retained even if idle (reduces flexibility for DRS)
-- **Limit** — hard cap; causes ballooning even if host has free memory (common misconfiguration)
-- **Shares** — only matter during contention
-
-> ⚠️ A VM with a memory limit below its configured RAM will experience ballooning even when the host has plenty of free memory. This is a very common scenario question.
-
-### Exam Decision Points
-- Inter-VM TPS = **disabled by default** (intra-VM only)
-- Ballooning requires **VMware Tools**
-- Memory limit below VM's RAM = **ballooning on a healthy host** — remove limit
-- Memory Tiering requires **Maintenance Mode** to enable/change
-- Suspend-to-memory **not supported** with Memory Tiering enabled
-- Optane PMem = **not supported** in vSphere 9.0
-
+<div class="details-body">
+<h3>Key Concepts</h3>
+<p>vSphere uses a hierarchy of memory reclamation techniques when hosts are under memory pressure. Understanding the order and tradeoffs is essential.</p>
+<p><strong>Memory Reclamation Hierarchy (in order, least to most disruptive):</strong></p>
+<ol>
+<li>
+<p><strong>Transparent Page Sharing (TPS)</strong> — deduplicates identical memory pages. Since vSphere 6.0, inter-VM TPS is <strong>disabled by default</strong> for security. TPS only occurs within a single VM (intra-VM). Cannot be relied upon for cross-VM memory savings.</p>
+</li>
+<li>
+<p><strong>Ballooning</strong> — VMware Tools balloon driver inflates inside the guest, pressuring the guest OS to reclaim its own pages (using guest's native memory management). Requires VMware Tools. Performance is close to native under memory pressure.</p>
+</li>
+<li>
+<p><strong>Memory Compression</strong> — before swapping, ESX compresses pages into a compression cache (2KB compressed = stored in RAM cache instead of swap). Faster than disk swap.</p>
+</li>
+<li>
+<p><strong>Host-Level Swapping</strong> — VMkernel swaps pages to disk (<code>.vswp</code> file on datastore). Worst performance. If using SSD-backed swap cache (<code>/scratch</code>), significantly better than HDD swap.</p>
+</li>
+</ol>
+<blockquote>
+<p>⚠️ <strong>Avoid overcommitment that causes regular host swapping</strong> — this is the primary goal of memory management.</p>
+</blockquote>
+<p><strong>Memory Tiering over NVMe (vSphere 9.0 — New Feature):</strong><br />
+NVMe devices can serve as a second memory tier. Cold pages are staged to NVMe instead of traditional swap.</p>
+<ul>
+<li>Requires high-performance NVMe: ≥100,000 IOPS write, ≥3 DWPD endurance</li>
+<li>Configuration: ESXCLI to designate NVMe device, then enable at cluster level</li>
+<li>Host must be in <strong>Maintenance Mode</strong> to enable/disable/reconfigure tiering</li>
+<li><strong>Suspend-to-memory is NOT supported</strong> when Memory Tiering is active (suspend-to-disk still works)</li>
+<li>Optane PMem (NVDIMM) is <strong>not supported</strong> in vSphere 9.0 — must be removed</li>
+</ul>
+<pre><code class="language-bash"># Designate NVMe device for memory tiering
+esxcli system tierdevice create -d /vmfs/devices/disks/&lt;nvme-device&gt;
+</code></pre>
+<p><strong>Key esxtop memory counters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Counter</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MCTLSZ</code></td>
+<td>Balloon driver active size (MB)</td>
+</tr>
+<tr>
+<td><code>SWCUR</code></td>
+<td>Current swap usage (MB)</td>
+</tr>
+<tr>
+<td><code>ZIP/s</code></td>
+<td>Pages being compressed per second</td>
+</tr>
+<tr>
+<td><code>UNZIP/s</code></td>
+<td>Pages decompressed per second</td>
+</tr>
+<tr>
+<td><code>GRANT</code></td>
+<td>Memory granted to VM</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Memory Reservations vs Limits vs Shares:</strong></p>
+<ul>
+<li><strong>Reservation</strong> — guaranteed memory; retained even if idle (reduces flexibility for DRS)</li>
+<li><strong>Limit</strong> — hard cap; causes ballooning even if host has free memory (common misconfiguration)</li>
+<li><strong>Shares</strong> — only matter during contention</li>
+</ul>
+<blockquote>
+<p>⚠️ A VM with a memory limit below its configured RAM will experience ballooning even when the host has plenty of free memory. This is a very common scenario question.</p>
+</blockquote>
+<h3>Exam Decision Points</h3>
+<ul>
+<li>Inter-VM TPS = <strong>disabled by default</strong> (intra-VM only)</li>
+<li>Ballooning requires <strong>VMware Tools</strong></li>
+<li>Memory limit below VM's RAM = <strong>ballooning on a healthy host</strong> — remove limit</li>
+<li>Memory Tiering requires <strong>Maintenance Mode</strong> to enable/change</li>
+<li>Suspend-to-memory <strong>not supported</strong> with Memory Tiering enabled</li>
+<li>Optane PMem = <strong>not supported</strong> in vSphere 9.0</li>
+</ul>
+</div>
 </details>
 
 ---
 
-<details markdown="1">
+<details>
 <summary><strong>4.15 — Optimize the Performance of vCenter Server</strong></summary>
-
-### Key Concepts
-
-This objective focuses on vCenter Server itself as a managed component — not the workloads it manages.
-
-**vpxd is the dominant vCenter CPU consumer:**
-The `vmware-vpxd` service (vCenter Server daemon) handles all vSphere API requests, DRS calculations, and management operations. All other vCenter services consume minimal CPU by comparison.
-
-If vCenter is slow: check `vpxd` CPU and memory first via `vimtop` on the VCSA:
-```bash
-# SSH to VCSA, then:
+<div class="details-body">
+<h3>Key Concepts</h3>
+<p>This objective focuses on vCenter Server itself as a managed component — not the workloads it manages.</p>
+<p><strong>vpxd is the dominant vCenter CPU consumer:</strong><br />
+The <code>vmware-vpxd</code> service (vCenter Server daemon) handles all vSphere API requests, DRS calculations, and management operations. All other vCenter services consume minimal CPU by comparison.</p>
+<p>If vCenter is slow: check <code>vpxd</code> CPU and memory first via <code>vimtop</code> on the VCSA:</p>
+<pre><code class="language-bash"># SSH to VCSA, then:
 vimtop
-```
-
-**Statistics Collection — Key Lever:**
-
-| Collection Interval | Default Retention |
-|---|---|
-| 5 minutes | 1 day |
-| 30 minutes | 1 week |
-| 2 hours | 1 month |
-| 1 day | 1 year |
-
-All intervals default to **Level 1**. Raising statistics level:
-- Level 1: Cluster Services, CPU, Disk, Memory, Network, System, VM Operations
-- Level 4: Everything (debugging only — do not leave enabled)
-- **Rule:** Level must be ≤ the level of the preceding interval
-- **Risk:** Stats levels 3/4 can cause `vpxd` memory growth and eventual crash if it can't persist data fast enough
-
-**Path:** `vCenter > Configure > Settings > General > Statistics`
-
-**vPostgres (embedded database):**
-vCenter uses an embedded PostgreSQL instance. Key optimization: ensure fast, low-latency storage for the VCSA. Avoid hosting VCSA on a congested vSAN datastore in small environments.
-
-**Advanced Settings for performance:**
-
-| Setting | Purpose |
-|---|---|
-| `config.vpxd.stats.maxQueryMetrics` | Limits metrics per API query — set lower if monitoring tools are causing load |
-| `config.vpxd.heartbeat.notRespondingTimeout` | Host non-response timeout |
-
-**Periodic network spikes:**
-Every 5 minutes, vCenter polls all ESXi hosts for performance stats and writes them to vPostgres — causes predictable network spikes. Design management network accordingly.
-
-**vMotion concurrency:**
-Control concurrent migrations: `config.migrate.max` advanced setting. Excessive concurrent vMotions generate significant vCenter management plane load.
-
-**VCSA Management Interface (port 5480):**
-Monitor VCSA resource usage, database health, and disk usage at `https://<vcsa-fqdn>:5480`.
-
-### Exam Decision Points
-- `vpxd` = **primary CPU consumer** in vCenter — start here for performance issues
-- Raising stats above Level 1 = **database growth risk and vpxd crash risk**
-- `maxQueryMetrics` = tool to throttle monitoring systems hitting the vCenter API
-- 5-minute network spikes = **expected behavior** from stats collection, not a network problem
-- vimtop = run on **VCSA SSH session** for per-service resource view
-
+</code></pre>
+<p><strong>Statistics Collection — Key Lever:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Collection Interval</th>
+<th>Default Retention</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5 minutes</td>
+<td>1 day</td>
+</tr>
+<tr>
+<td>30 minutes</td>
+<td>1 week</td>
+</tr>
+<tr>
+<td>2 hours</td>
+<td>1 month</td>
+</tr>
+<tr>
+<td>1 day</td>
+<td>1 year</td>
+</tr>
+</tbody>
+</table>
+<p>All intervals default to <strong>Level 1</strong>. Raising statistics level:</p>
+<ul>
+<li>Level 1: Cluster Services, CPU, Disk, Memory, Network, System, VM Operations</li>
+<li>Level 4: Everything (debugging only — do not leave enabled)</li>
+<li><strong>Rule:</strong> Level must be ≤ the level of the preceding interval</li>
+<li><strong>Risk:</strong> Stats levels 3/4 can cause <code>vpxd</code> memory growth and eventual crash if it can't persist data fast enough</li>
+</ul>
+<p><strong>Path:</strong> <code>vCenter &gt; Configure &gt; Settings &gt; General &gt; Statistics</code></p>
+<p><strong>vPostgres (embedded database):</strong><br />
+vCenter uses an embedded PostgreSQL instance. Key optimization: ensure fast, low-latency storage for the VCSA. Avoid hosting VCSA on a congested vSAN datastore in small environments.</p>
+<p><strong>Advanced Settings for performance:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>config.vpxd.stats.maxQueryMetrics</code></td>
+<td>Limits metrics per API query — set lower if monitoring tools are causing load</td>
+</tr>
+<tr>
+<td><code>config.vpxd.heartbeat.notRespondingTimeout</code></td>
+<td>Host non-response timeout</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Periodic network spikes:</strong><br />
+Every 5 minutes, vCenter polls all ESXi hosts for performance stats and writes them to vPostgres — causes predictable network spikes. Design management network accordingly.</p>
+<p><strong>vMotion concurrency:</strong><br />
+Control concurrent migrations: <code>config.migrate.max</code> advanced setting. Excessive concurrent vMotions generate significant vCenter management plane load.</p>
+<p><strong>VCSA Management Interface (port 5480):</strong><br />
+Monitor VCSA resource usage, database health, and disk usage at <code>https://&lt;vcsa-fqdn&gt;:5480</code>.</p>
+<h3>Exam Decision Points</h3>
+<ul>
+<li><code>vpxd</code> = <strong>primary CPU consumer</strong> in vCenter — start here for performance issues</li>
+<li>Raising stats above Level 1 = <strong>database growth risk and vpxd crash risk</strong></li>
+<li><code>maxQueryMetrics</code> = tool to throttle monitoring systems hitting the vCenter API</li>
+<li>5-minute network spikes = <strong>expected behavior</strong> from stats collection, not a network problem</li>
+<li>vimtop = run on <strong>VCSA SSH session</strong> for per-service resource view</li>
+</ul>
+</div>
 </details>
 
 ---
 
-<details markdown="1">
+<details>
 <summary><strong>4.16 — Monitor vSphere Components within a VCF Workload Domain</strong></summary>
-
-### Key Concepts
-
-**Performance Charts:**
-- Real-time data updates every **20 seconds** (pulled live from host, not stored in DB)
-- Historical data from vCenter DB at configured statistics intervals
-- Advanced charts: any counter at any collection interval
-- Cannot sample faster than 20s via performance charts — use esxtop for sub-20s sampling
-
-**esxtop / resxtop modes:**
-
-| Mode | Command | Use Case |
-|---|---|---|
-| Interactive | `esxtop` | Real-time monitoring on host |
-| Batch | `esxtop -b -n 60 -d 2 > output.csv` | Capture data over time to CSV |
-| Replay | `esxtop -R output.csv` | Offline analysis of captured batch data |
-
-- resxtop runs **remotely** on a Linux workstation (connects via vSphere API)
-- esxtop runs **locally** on the ESXi host via SSH
-
-**Critical esxtop panels and counters:**
-
-| Panel | Key | Critical Counters |
-|---|---|---|
-| CPU | `c` | `%RDY`, `%CSTP`, `%MLMTD` |
-| Memory | `m` | `MCTLSZ` (balloon), `SWCUR` (swap), `ZIP/UNZIP` |
-| Disk | `d` | `DAVG` (device latency), `KAVG` (kernel latency), `GAVG` (total) |
-| Network | `n` | `%DRPTX/%DRPRX` (drops), `MbTX/MbRX` (throughput) |
-
-**Storage latency thresholds:**
-- `DAVG` > 10ms = storage issue for normal workloads
-- `DAVG` > 20ms = significant problem
-
-**Batch mode workflow:**
-1. Configure columns in interactive mode, save with `W`
-2. Run batch: `esxtop -b -n <count> -d <interval> > data.csv`
-3. Replay: `esxtop -R data.csv` for offline analysis
-
-**vimtop:**
-Monitors vCenter's internal services (vpxd, vpostgres, rhttpproxy).
-```bash
-# On VCSA via SSH:
+<div class="details-body">
+<h3>Key Concepts</h3>
+<p><strong>Performance Charts:</strong></p>
+<ul>
+<li>Real-time data updates every <strong>20 seconds</strong> (pulled live from host, not stored in DB)</li>
+<li>Historical data from vCenter DB at configured statistics intervals</li>
+<li>Advanced charts: any counter at any collection interval</li>
+<li>Cannot sample faster than 20s via performance charts — use esxtop for sub-20s sampling</li>
+</ul>
+<p><strong>esxtop / resxtop modes:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Command</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Interactive</td>
+<td><code>esxtop</code></td>
+<td>Real-time monitoring on host</td>
+</tr>
+<tr>
+<td>Batch</td>
+<td><code>esxtop -b -n 60 -d 2 &gt; output.csv</code></td>
+<td>Capture data over time to CSV</td>
+</tr>
+<tr>
+<td>Replay</td>
+<td><code>esxtop -R output.csv</code></td>
+<td>Offline analysis of captured batch data</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>resxtop runs <strong>remotely</strong> on a Linux workstation (connects via vSphere API)</li>
+<li>esxtop runs <strong>locally</strong> on the ESXi host via SSH</li>
+</ul>
+<p><strong>Critical esxtop panels and counters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Panel</th>
+<th>Key</th>
+<th>Critical Counters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU</td>
+<td><code>c</code></td>
+<td><code>%RDY</code>, <code>%CSTP</code>, <code>%MLMTD</code></td>
+</tr>
+<tr>
+<td>Memory</td>
+<td><code>m</code></td>
+<td><code>MCTLSZ</code> (balloon), <code>SWCUR</code> (swap), <code>ZIP/UNZIP</code></td>
+</tr>
+<tr>
+<td>Disk</td>
+<td><code>d</code></td>
+<td><code>DAVG</code> (device latency), <code>KAVG</code> (kernel latency), <code>GAVG</code> (total)</td>
+</tr>
+<tr>
+<td>Network</td>
+<td><code>n</code></td>
+<td><code>%DRPTX/%DRPRX</code> (drops), <code>MbTX/MbRX</code> (throughput)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Storage latency thresholds:</strong></p>
+<ul>
+<li><code>DAVG</code> &gt; 10ms = storage issue for normal workloads</li>
+<li><code>DAVG</code> &gt; 20ms = significant problem</li>
+</ul>
+<p><strong>Batch mode workflow:</strong><br />
+1. Configure columns in interactive mode, save with <code>W</code><br />
+2. Run batch: <code>esxtop -b -n &lt;count&gt; -d &lt;interval&gt; &gt; data.csv</code><br />
+3. Replay: <code>esxtop -R data.csv</code> for offline analysis</p>
+<p><strong>vimtop:</strong><br />
+Monitors vCenter's internal services (vpxd, vpostgres, rhttpproxy).</p>
+<pre><code class="language-bash"># On VCSA via SSH:
 vimtop
-```
-
-**Alarms:**
-- Metric/condition-based (e.g., CPU > 90%) or event-based
-- Configure SMTP for email alerts: `Administration > vCenter Server Settings > Mail`
-- Configure SNMP: `Administration > vCenter Server Settings > SNMP`
-- Best practice: **don't modify built-in alarms** — disable and create custom ones
-
-**Key log file locations:**
-
-| Component | Log Path |
-|---|---|
-| vCenter vpxd | `/var/log/vmware/vpxd/vpxd.log` |
-| ESXi hostd | `/var/log/hostd.log` |
-| ESXi vmkernel | `/var/log/vmkernel.log` |
-| ESXi vpxa | `/var/log/vpxa.log` |
-| Authentication | `/var/log/auth.log` |
-
-**ESXi syslog forwarding:**
-`esxcli system syslog config set --loghost=udp://10.10.0.x:514`
-Or via vSphere Client: `Host > Configure > System > Advanced System Settings > Syslog.global.logHost`
-
-### Exam Decision Points
-- Real-time charts = **20 second** sampling (not configurable lower via charts)
-- esxtop batch → save config with `W` in interactive mode first
-- resxtop = remote; esxtop = local SSH only
-- **Don't modify built-in alarms** — disable and create new
-- DAVG > 10ms = investigate storage; > 20ms = problem
-
+</code></pre>
+<p><strong>Alarms:</strong></p>
+<ul>
+<li>Metric/condition-based (e.g., CPU &gt; 90%) or event-based</li>
+<li>Configure SMTP for email alerts: <code>Administration &gt; vCenter Server Settings &gt; Mail</code></li>
+<li>Configure SNMP: <code>Administration &gt; vCenter Server Settings &gt; SNMP</code></li>
+<li>Best practice: <strong>don't modify built-in alarms</strong> — disable and create custom ones</li>
+</ul>
+<p><strong>Key log file locations:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Log Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>vCenter vpxd</td>
+<td><code>/var/log/vmware/vpxd/vpxd.log</code></td>
+</tr>
+<tr>
+<td>ESXi hostd</td>
+<td><code>/var/log/hostd.log</code></td>
+</tr>
+<tr>
+<td>ESXi vmkernel</td>
+<td><code>/var/log/vmkernel.log</code></td>
+</tr>
+<tr>
+<td>ESXi vpxa</td>
+<td><code>/var/log/vpxa.log</code></td>
+</tr>
+<tr>
+<td>Authentication</td>
+<td><code>/var/log/auth.log</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>ESXi syslog forwarding:</strong><br />
+<code>esxcli system syslog config set --loghost=udp://10.10.0.x:514</code><br />
+Or via vSphere Client: <code>Host &gt; Configure &gt; System &gt; Advanced System Settings &gt; Syslog.global.logHost</code></p>
+<h3>Exam Decision Points</h3>
+<ul>
+<li>Real-time charts = <strong>20 second</strong> sampling (not configurable lower via charts)</li>
+<li>esxtop batch → save config with <code>W</code> in interactive mode first</li>
+<li>resxtop = remote; esxtop = local SSH only</li>
+<li><strong>Don't modify built-in alarms</strong> — disable and create new</li>
+<li>DAVG &gt; 10ms = investigate storage; &gt; 20ms = problem</li>
+</ul>
+</div>
 </details>
 
 ---
 
-<details markdown="1">
+<details>
 <summary><strong>4.17 — Configure vSphere Security and Access Control in VCF</strong></summary>
-
-### Key Concepts
-
-**VCF 9 SSO Architecture (Big Change):**
-Enhanced Linked Mode (ELM) is removed. Unified SSO is now delivered via the **Identity Broker**.
-
-- Identity Broker manages connections between VCF components and an external IdP
-- Supported for: vSphere, NSX, VCF Operations, VCF Automation
-- **SDDC Manager and ESXi are NOT in the Identity Broker SSO scope**
-- Supported protocols: SAML, OIDC, AD/LDAP
-- Path: `VCF Operations > Fleet Management > Identity and Access`
-
-**vSphere RBAC Model:**
-
-| Building Block | Definition |
-|---|---|
-| Privilege | A single action (e.g., `VirtualMachine.Interact.PowerOn`) |
-| Role | A named collection of privileges |
-| Permission | Role + User/Group bound to an inventory object |
-
-**Key built-in roles:**
-
-| Role | What it can do |
-|---|---|
-| Administrator | Full access |
-| Read-only | View only |
-| No access | Cannot see or do anything |
-| No Cryptography Administrator | Full admin except crypto operations |
-
-**Permission inheritance:** Propagates down the inventory hierarchy (DC → Cluster → Host → VM). Override by assigning a more restrictive permission at a lower level.
-
-**Global Permissions vs vCenter Permissions:**
-- Global Permissions: apply across all vCenters in the SSO domain
-- vCenter Permissions: scoped to one vCenter's inventory
-
-**ESXi Lockdown Mode:**
-
-| Feature | Normal Lockdown | Strict Lockdown |
-|---|---|---|
-| DCUI service | Running | **Stopped** |
-| DCUI access | Exception Users + DCUI.Access list | Nobody |
-| SSH/Shell | Disabled (unless Exception User with admin) | Same |
-| Configure via DCUI | Yes | No — use vSphere Client only |
-
-**Exception Users:** Local ESXi users or AD users with locally defined privileges. **AD group members lose permissions in lockdown mode** — must be individual exception users.
-
-**DCUI.Access:** Advanced setting listing users who can change lockdown mode regardless of privileges. Local users only. Enabling/disabling lockdown via DCUI **discards host permissions** — always use vSphere Client to preserve permissions.
-
-**PowerCLI for permissions:**
-```powershell
-# Get all roles
+<div class="details-body">
+<h3>Key Concepts</h3>
+<p><strong>VCF 9 SSO Architecture (Big Change):</strong><br />
+Enhanced Linked Mode (ELM) is removed. Unified SSO is now delivered via the <strong>Identity Broker</strong>.</p>
+<ul>
+<li>Identity Broker manages connections between VCF components and an external IdP</li>
+<li>Supported for: vSphere, NSX, VCF Operations, VCF Automation</li>
+<li><strong>SDDC Manager and ESXi are NOT in the Identity Broker SSO scope</strong></li>
+<li>Supported protocols: SAML, OIDC, AD/LDAP</li>
+<li>Path: <code>VCF Operations &gt; Fleet Management &gt; Identity and Access</code></li>
+</ul>
+<p><strong>vSphere RBAC Model:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Building Block</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Privilege</td>
+<td>A single action (e.g., <code>VirtualMachine.Interact.PowerOn</code>)</td>
+</tr>
+<tr>
+<td>Role</td>
+<td>A named collection of privileges</td>
+</tr>
+<tr>
+<td>Permission</td>
+<td>Role + User/Group bound to an inventory object</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key built-in roles:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>What it can do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Administrator</td>
+<td>Full access</td>
+</tr>
+<tr>
+<td>Read-only</td>
+<td>View only</td>
+</tr>
+<tr>
+<td>No access</td>
+<td>Cannot see or do anything</td>
+</tr>
+<tr>
+<td>No Cryptography Administrator</td>
+<td>Full admin except crypto operations</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Permission inheritance:</strong> Propagates down the inventory hierarchy (DC → Cluster → Host → VM). Override by assigning a more restrictive permission at a lower level.</p>
+<p><strong>Global Permissions vs vCenter Permissions:</strong></p>
+<ul>
+<li>Global Permissions: apply across all vCenters in the SSO domain</li>
+<li>vCenter Permissions: scoped to one vCenter's inventory</li>
+</ul>
+<p><strong>ESXi Lockdown Mode:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Normal Lockdown</th>
+<th>Strict Lockdown</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DCUI service</td>
+<td>Running</td>
+<td><strong>Stopped</strong></td>
+</tr>
+<tr>
+<td>DCUI access</td>
+<td>Exception Users + DCUI.Access list</td>
+<td>Nobody</td>
+</tr>
+<tr>
+<td>SSH/Shell</td>
+<td>Disabled (unless Exception User with admin)</td>
+<td>Same</td>
+</tr>
+<tr>
+<td>Configure via DCUI</td>
+<td>Yes</td>
+<td>No — use vSphere Client only</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Exception Users:</strong> Local ESXi users or AD users with locally defined privileges. <strong>AD group members lose permissions in lockdown mode</strong> — must be individual exception users.</p>
+<p><strong>DCUI.Access:</strong> Advanced setting listing users who can change lockdown mode regardless of privileges. Local users only. Enabling/disabling lockdown via DCUI <strong>discards host permissions</strong> — always use vSphere Client to preserve permissions.</p>
+<p><strong>PowerCLI for permissions:</strong></p>
+<pre><code class="language-powershell"># Get all roles
 Get-VIRole
 
 # Create a new custom role
-New-VIRole -Name "VM_Operator" -Privilege (Get-VIPrivilege -Id "VirtualMachine.Interact.PowerOn","VirtualMachine.Interact.PowerOff")
+New-VIRole -Name &quot;VM_Operator&quot; -Privilege (Get-VIPrivilege -Id &quot;VirtualMachine.Interact.PowerOn&quot;,&quot;VirtualMachine.Interact.PowerOff&quot;)
 
 # Assign permission
-New-VIPermission -Entity (Get-VM "WebServer01") -Principal "domain\vmoperators" -Role "VM_Operator" -Propagate $true
-```
-
-### Exam Decision Points
-- VCF SSO (Identity Broker) excludes **SDDC Manager and ESXi**
-- AD group members = **lose permissions** in lockdown mode (use individual Exception Users)
-- Strict lockdown = **DCUI stopped** — host may require reinstall if vCenter lost with no Exception Users
-- Toggle lockdown via **DCUI** = **discards host permissions** — always use vSphere Client
-- `DCUI.Access` = local users only; AD users not supported
-
+New-VIPermission -Entity (Get-VM &quot;WebServer01&quot;) -Principal &quot;domain\vmoperators&quot; -Role &quot;VM_Operator&quot; -Propagate $true
+</code></pre>
+<h3>Exam Decision Points</h3>
+<ul>
+<li>VCF SSO (Identity Broker) excludes <strong>SDDC Manager and ESXi</strong></li>
+<li>AD group members = <strong>lose permissions</strong> in lockdown mode (use individual Exception Users)</li>
+<li>Strict lockdown = <strong>DCUI stopped</strong> — host may require reinstall if vCenter lost with no Exception Users</li>
+<li>Toggle lockdown via <strong>DCUI</strong> = <strong>discards host permissions</strong> — always use vSphere Client</li>
+<li><code>DCUI.Access</code> = local users only; AD users not supported</li>
+</ul>
+</div>
 </details>
 
 ---
 
-<details markdown="1">
+<details>
 <summary><strong>4.18 — Configure VM Encryption and vSphere Trusted Environments</strong></summary>
-
-### Key Concepts
-
-**Three Key Provider Types:**
-
-| Provider | External KMS? | vTPM | VM Encryption | ESXi TPM Req? | Use For |
-|---|---|---|---|---|---|
-| Native Key Provider (NKP) | No | ✅ All editions | ✅ Enterprise Plus | Preferred, not mandatory | Simple deployments, no KMS |
-| Standard Key Provider | Yes (KMIP 1.1) | ✅ | ✅ Enterprise Plus | No | Existing KMS infrastructure |
-| Trusted Key Provider (vTA) | Yes (KMIP 1.1) | ✅ | ✅ Enterprise Plus | Yes, on Trusted Hosts | Hardware attestation required |
-
-**KEK / DEK Hierarchy:**
-- **KMS → KEK** (Key Encryption Key): AES-256, held by vCenter (ID only, not the key itself)
-- **ESXi → DEK** (Data Encryption Key): XTS-AES-256, encrypts VMDK data
-- NKP: vCenter generates KDK, pushes to ESXi hosts — no external KMS
-
-**What is encrypted:**
-- VM home files: `.vmx`, `.nvram`, `.vswp`
-- Virtual disk flat files: `-flat.vmdk`
-- Core dumps (if host encryption mode active)
-
-**Not encrypted:** `.log`, `.vmdk` descriptor, `.vmsd` snapshots
-
-**Rekeying:**
-
-| Type | Online? | Snapshots OK? | What changes? |
-|---|---|---|---|
-| Shallow Recrypt | ✅ Yes | ✅ (single branch) | KEK only |
-| Deep Recrypt | ❌ No | ❌ Must remove | KEK + DEK |
-
-**NKP must be backed up immediately after creation** — vCenter raises an alarm and the NKP cannot be used until a backup has been downloaded.
-
-**VM Encryption workflow:**
-1. Configure Key Provider (`Home > Key Providers > Add`)
-2. Create VM Storage Policy with encryption (`Host Based Rules > Default Encryption Properties`)
-3. Apply policy to VM
-
-**vTPM requirements:**
-- Key provider configured
-- VM must use **EFI firmware** (not BIOS)
-- VM must be powered off to add vTPM
-- vTPM data stored in `.nvram` file
-
-**vSphere Trust Authority (vTA):**
-- **Trust Authority Cluster** — runs Attestation Service and Key Provider Service (management)
-- **Trusted Cluster** — workload VMs; **all ESXi hosts require TPM 2.0**
-- Attestation: TPM on ESXi host measures software stack → sends to Attestation Service → service verifies against blessed images and known TPM endorsement keys → issues JWT token
-- vTA config is in ESXi ConfigStore — **not backed up by vCenter file-based backup**
-
-**No Cryptography Administrator role:** Full vCenter admin privileges but **zero cryptographic operations**. Use to delegate to operators who must never touch encrypted VMs.
-
-### Exam Decision Points
-- NKP: backup required **before** it can be used
-- vTPM requires **EFI firmware** — BIOS VMs cannot use vTPM
-- Deep recrypt: powered off + **no snapshots**
-- Shallow recrypt: online + single snapshot branch OK
-- vTA: Trusted Cluster hosts **must have physical TPM 2.0**
-- vTA config backup: **separate procedure** — NOT covered by standard vCenter backup
-- No Cryptography Administrator = delegate admin without crypto access
-
+<div class="details-body">
+<h3>Key Concepts</h3>
+<p><strong>Three Key Provider Types:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Provider</th>
+<th>External KMS?</th>
+<th>vTPM</th>
+<th>VM Encryption</th>
+<th>ESXi TPM Req?</th>
+<th>Use For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Native Key Provider (NKP)</td>
+<td>No</td>
+<td>✅ All editions</td>
+<td>✅ Enterprise Plus</td>
+<td>Preferred, not mandatory</td>
+<td>Simple deployments, no KMS</td>
+</tr>
+<tr>
+<td>Standard Key Provider</td>
+<td>Yes (KMIP 1.1)</td>
+<td>✅</td>
+<td>✅ Enterprise Plus</td>
+<td>No</td>
+<td>Existing KMS infrastructure</td>
+</tr>
+<tr>
+<td>Trusted Key Provider (vTA)</td>
+<td>Yes (KMIP 1.1)</td>
+<td>✅</td>
+<td>✅ Enterprise Plus</td>
+<td>Yes, on Trusted Hosts</td>
+<td>Hardware attestation required</td>
+</tr>
+</tbody>
+</table>
+<p><strong>KEK / DEK Hierarchy:</strong></p>
+<ul>
+<li><strong>KMS → KEK</strong> (Key Encryption Key): AES-256, held by vCenter (ID only, not the key itself)</li>
+<li><strong>ESXi → DEK</strong> (Data Encryption Key): XTS-AES-256, encrypts VMDK data</li>
+<li>NKP: vCenter generates KDK, pushes to ESXi hosts — no external KMS</li>
+</ul>
+<p><strong>What is encrypted:</strong></p>
+<ul>
+<li>VM home files: <code>.vmx</code>, <code>.nvram</code>, <code>.vswp</code></li>
+<li>Virtual disk flat files: <code>-flat.vmdk</code></li>
+<li>Core dumps (if host encryption mode active)</li>
+</ul>
+<p><strong>Not encrypted:</strong> <code>.log</code>, <code>.vmdk</code> descriptor, <code>.vmsd</code> snapshots</p>
+<p><strong>Rekeying:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Online?</th>
+<th>Snapshots OK?</th>
+<th>What changes?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Shallow Recrypt</td>
+<td>✅ Yes</td>
+<td>✅ (single branch)</td>
+<td>KEK only</td>
+</tr>
+<tr>
+<td>Deep Recrypt</td>
+<td>❌ No</td>
+<td>❌ Must remove</td>
+<td>KEK + DEK</td>
+</tr>
+</tbody>
+</table>
+<p><strong>NKP must be backed up immediately after creation</strong> — vCenter raises an alarm and the NKP cannot be used until a backup has been downloaded.</p>
+<p><strong>VM Encryption workflow:</strong><br />
+1. Configure Key Provider (<code>Home &gt; Key Providers &gt; Add</code>)<br />
+2. Create VM Storage Policy with encryption (<code>Host Based Rules &gt; Default Encryption Properties</code>)<br />
+3. Apply policy to VM</p>
+<p><strong>vTPM requirements:</strong></p>
+<ul>
+<li>Key provider configured</li>
+<li>VM must use <strong>EFI firmware</strong> (not BIOS)</li>
+<li>VM must be powered off to add vTPM</li>
+<li>vTPM data stored in <code>.nvram</code> file</li>
+</ul>
+<p><strong>vSphere Trust Authority (vTA):</strong></p>
+<ul>
+<li><strong>Trust Authority Cluster</strong> — runs Attestation Service and Key Provider Service (management)</li>
+<li><strong>Trusted Cluster</strong> — workload VMs; <strong>all ESXi hosts require TPM 2.0</strong></li>
+<li>Attestation: TPM on ESXi host measures software stack → sends to Attestation Service → service verifies against blessed images and known TPM endorsement keys → issues JWT token</li>
+<li>vTA config is in ESXi ConfigStore — <strong>not backed up by vCenter file-based backup</strong></li>
+</ul>
+<p><strong>No Cryptography Administrator role:</strong> Full vCenter admin privileges but <strong>zero cryptographic operations</strong>. Use to delegate to operators who must never touch encrypted VMs.</p>
+<h3>Exam Decision Points</h3>
+<ul>
+<li>NKP: backup required <strong>before</strong> it can be used</li>
+<li>vTPM requires <strong>EFI firmware</strong> — BIOS VMs cannot use vTPM</li>
+<li>Deep recrypt: powered off + <strong>no snapshots</strong></li>
+<li>Shallow recrypt: online + single snapshot branch OK</li>
+<li>vTA: Trusted Cluster hosts <strong>must have physical TPM 2.0</strong></li>
+<li>vTA config backup: <strong>separate procedure</strong> — NOT covered by standard vCenter backup</li>
+<li>No Cryptography Administrator = delegate admin without crypto access</li>
+</ul>
+</div>
 </details>
 
 ---

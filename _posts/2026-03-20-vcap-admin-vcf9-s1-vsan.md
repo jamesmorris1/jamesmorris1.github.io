@@ -14,423 +14,468 @@ Part of the [VCAP-ADMIN VCF 9.0 Study Guide series]({% post_url 2026-03-20-vcap-
 
 ---
 
-<details markdown="1">
+<details>
 <summary><strong>4.1 — Deploy a vSAN Cluster within a VCF Workload Domain</strong></summary>
-
-### Key Concepts
-
-In VCF 9, vSAN is the default storage platform for workload domains. When deploying a workload domain via SDDC Manager, vSAN is configured as part of the wizard.
-
-**vSAN cluster types in VCF 9:**
-- **vSAN OSA (Original Storage Architecture)** — disk groups with cache + capacity tiers
-- **vSAN ESA (Express Storage Architecture)** — single-tier NVMe, no disk groups, all-flash required
-
-**Deployment path (SDDC Manager):**
-`SDDC Manager > Workload Domains > Add Domain > Configure Cluster > vSAN Storage`
-
-**Key requirements:**
-- Minimum 3 hosts for standard vSAN cluster (4 recommended for FTT=1 RAID-5)
-- All hosts must have contributed disks that are not partitioned
-- VMkernel adapter on dedicated vSAN VLAN (vmk tag: `vsan`)
-- vSAN license applied to the cluster
-
-**vSAN OSA disk group structure:**
-- 1 cache disk (SSD/NVMe) + 1–7 capacity disks per disk group
-- 1–5 disk groups per host
-- Cache disk is write-back cache (70% write, 30% read buffer)
-
-**vSAN ESA structure:**
-- No disk groups — single pool of NVMe/SSD devices
-- Requires NVMe or high-performance SAS/SATA SSDs
-- Supports RAID-5/6 at lower overhead than OSA
-
-**SDDC Manager claims disks automatically** when hosts are added to the workload domain if auto-claim is enabled. Otherwise, claim manually via vSphere Client > Cluster > Configure > vSAN > Disk Management.
-
-### Exam Decision Points
-- Minimum hosts for vSAN: **3** (OSA and ESA)
-- RAID-5 erasure coding requires **4 hosts** minimum
-- RAID-6 requires **6 hosts** minimum
-- FTT=1 RAID-1 mirroring = **3 hosts** minimum
-- ESA: requires **NVMe or equivalent high-perf disks**; no cache/capacity split
-- OSA: cache disk must be **faster** than capacity disks; do not mix SSD/HDD in ESA
-
+<div class="details-body">
+<h3>Key Concepts</h3>
+<p>In VCF 9, vSAN is the default storage platform for workload domains. When deploying a workload domain via SDDC Manager, vSAN is configured as part of the wizard.</p>
+<p><strong>vSAN cluster types in VCF 9:</strong></p>
+<ul>
+<li><strong>vSAN OSA (Original Storage Architecture)</strong> — disk groups with cache + capacity tiers</li>
+<li><strong>vSAN ESA (Express Storage Architecture)</strong> — single-tier NVMe, no disk groups, all-flash required</li>
+</ul>
+<p><strong>Deployment path (SDDC Manager):</strong><br />
+<code>SDDC Manager &gt; Workload Domains &gt; Add Domain &gt; Configure Cluster &gt; vSAN Storage</code></p>
+<p><strong>Key requirements:</strong></p>
+<ul>
+<li>Minimum 3 hosts for standard vSAN cluster (4 recommended for FTT=1 RAID-5)</li>
+<li>All hosts must have contributed disks that are not partitioned</li>
+<li>VMkernel adapter on dedicated vSAN VLAN (vmk tag: <code>vsan</code>)</li>
+<li>vSAN license applied to the cluster</li>
+</ul>
+<p><strong>vSAN OSA disk group structure:</strong></p>
+<ul>
+<li>1 cache disk (SSD/NVMe) + 1–7 capacity disks per disk group</li>
+<li>1–5 disk groups per host</li>
+<li>Cache disk is write-back cache (70% write, 30% read buffer)</li>
+</ul>
+<p><strong>vSAN ESA structure:</strong></p>
+<ul>
+<li>No disk groups — single pool of NVMe/SSD devices</li>
+<li>Requires NVMe or high-performance SAS/SATA SSDs</li>
+<li>Supports RAID-5/6 at lower overhead than OSA</li>
+</ul>
+<p><strong>SDDC Manager claims disks automatically</strong> when hosts are added to the workload domain if auto-claim is enabled. Otherwise, claim manually via vSphere Client &gt; Cluster &gt; Configure &gt; vSAN &gt; Disk Management.</p>
+<h3>Exam Decision Points</h3>
+<ul>
+<li>Minimum hosts for vSAN: <strong>3</strong> (OSA and ESA)</li>
+<li>RAID-5 erasure coding requires <strong>4 hosts</strong> minimum</li>
+<li>RAID-6 requires <strong>6 hosts</strong> minimum</li>
+<li>FTT=1 RAID-1 mirroring = <strong>3 hosts</strong> minimum</li>
+<li>ESA: requires <strong>NVMe or equivalent high-perf disks</strong>; no cache/capacity split</li>
+<li>OSA: cache disk must be <strong>faster</strong> than capacity disks; do not mix SSD/HDD in ESA</li>
+</ul>
+</div>
 </details>
 
 ---
 
-<details markdown="1">
+<details>
 <summary><strong>4.2 — Deploy a vSAN Stretched Cluster</strong></summary>
-
-### Key Concepts
-
-A vSAN stretched cluster spans **two geographic sites** (preferred and secondary) with a **witness host** at a third site. It provides an RPO=0 (synchronous replication) active-active storage configuration with automatic failover.
-
-**Topology:**
-- **Preferred site** — primary workload site
-- **Secondary site** — mirror site, same number of hosts as preferred
-- **Witness host** — lightweight VM or physical host at a 3rd site; stores metadata only (no data)
-
-**Requirements:**
-- Equal number of data hosts per site (e.g., 3+3)
-- Witness host must be reachable from both sites
-- Inter-site latency: ≤5ms RTT between data sites; ≤200ms RTT to witness
-- vSAN stretched cluster license required
-- Dedicated witness traffic vmkernel (separate from vSAN vmkernel)
-
-**Deployment path (SDDC Manager / vSphere Client):**
-`vSphere Client > Cluster > Configure > vSAN > Fault Domains > Configure Stretched Cluster`
-
-Specify:
-1. Preferred site fault domain (hosts)
-2. Secondary site fault domain (hosts)
-3. Witness host (select from inventory)
-
-**Storage policy for stretched cluster:**
-Use **PFTT=1** (Primary Failures to Tolerate = 1 between sites) with **SFTT=1** (Secondary FTT within each site) for full protection. Default policy `vSAN Default Storage Policy` does not set PFTT — you must create a stretched-cluster aware policy.
-
-**Witness traffic:**
-Witness vmkernel (`vmk` tagged `witness`) must be routable to the witness host. Configure via: `Host > Configure > Networking > VMkernel Adapters`
-
-### Exam Decision Points
-- Witness host **stores metadata only** — no VM data goes to witness
-- Preferred site failure → VMs failover to secondary automatically (if quorum maintained via witness)
-- Both sites fail simultaneously → cluster goes offline (no quorum)
-- Witness host failure alone → cluster continues but **no tolerance for another failure**
-- Inter-site latency must be ≤**5ms** for data sites; witness allows up to **200ms**
-- Stretched cluster requires **separate witness vmkernel** adapter
-
+<div class="details-body">
+<h3>Key Concepts</h3>
+<p>A vSAN stretched cluster spans <strong>two geographic sites</strong> (preferred and secondary) with a <strong>witness host</strong> at a third site. It provides an RPO=0 (synchronous replication) active-active storage configuration with automatic failover.</p>
+<p><strong>Topology:</strong></p>
+<ul>
+<li><strong>Preferred site</strong> — primary workload site</li>
+<li><strong>Secondary site</strong> — mirror site, same number of hosts as preferred</li>
+<li><strong>Witness host</strong> — lightweight VM or physical host at a 3rd site; stores metadata only (no data)</li>
+</ul>
+<p><strong>Requirements:</strong></p>
+<ul>
+<li>Equal number of data hosts per site (e.g., 3+3)</li>
+<li>Witness host must be reachable from both sites</li>
+<li>Inter-site latency: ≤5ms RTT between data sites; ≤200ms RTT to witness</li>
+<li>vSAN stretched cluster license required</li>
+<li>Dedicated witness traffic vmkernel (separate from vSAN vmkernel)</li>
+</ul>
+<p><strong>Deployment path (SDDC Manager / vSphere Client):</strong><br />
+<code>vSphere Client &gt; Cluster &gt; Configure &gt; vSAN &gt; Fault Domains &gt; Configure Stretched Cluster</code></p>
+<p>Specify:<br />
+1. Preferred site fault domain (hosts)<br />
+2. Secondary site fault domain (hosts)<br />
+3. Witness host (select from inventory)</p>
+<p><strong>Storage policy for stretched cluster:</strong><br />
+Use <strong>PFTT=1</strong> (Primary Failures to Tolerate = 1 between sites) with <strong>SFTT=1</strong> (Secondary FTT within each site) for full protection. Default policy <code>vSAN Default Storage Policy</code> does not set PFTT — you must create a stretched-cluster aware policy.</p>
+<p><strong>Witness traffic:</strong><br />
+Witness vmkernel (<code>vmk</code> tagged <code>witness</code>) must be routable to the witness host. Configure via: <code>Host &gt; Configure &gt; Networking &gt; VMkernel Adapters</code></p>
+<h3>Exam Decision Points</h3>
+<ul>
+<li>Witness host <strong>stores metadata only</strong> — no VM data goes to witness</li>
+<li>Preferred site failure → VMs failover to secondary automatically (if quorum maintained via witness)</li>
+<li>Both sites fail simultaneously → cluster goes offline (no quorum)</li>
+<li>Witness host failure alone → cluster continues but <strong>no tolerance for another failure</strong></li>
+<li>Inter-site latency must be ≤<strong>5ms</strong> for data sites; witness allows up to <strong>200ms</strong></li>
+<li>Stretched cluster requires <strong>separate witness vmkernel</strong> adapter</li>
+</ul>
+</div>
 </details>
 
 ---
 
-<details markdown="1">
+<details>
 <summary><strong>4.3 — Configure Non-vSAN Storage within a VCF Workload Domain</strong></summary>
-
-### Key Concepts
-
-VCF supports supplemental storage types alongside vSAN for workload domains. Non-vSAN storage can be used for specific workloads that require it (e.g., shared file storage, FC-attached legacy workloads).
-
-**Supported supplemental storage types in VCF 9:**
-- **NFS (v3 and v4.1)** — network file storage, shared across hosts
-- **vVols (Virtual Volumes)** — VASA provider-based, per-VM storage objects
-- **Fibre Channel (FC)** — block storage via FC fabric; requires FC HBAs and zoning
-- **iSCSI** — block storage over IP network
-
-**Configuration path for NFS:**
-`vSphere Client > Cluster > Configure > Storage > Datastores > Add Datastore > NFS`
-
-**NFS vmkernel requirements:**
-- Dedicated vmkernel for NFS traffic recommended
-- MTU 9000 (jumbo frames) recommended for NFS performance
-
-**Fibre Channel:**
-- FC datastores appear automatically after zoning and masking at the storage array
-- VMFS 6 is the filesystem for FC and iSCSI block LUNs
-- Claim via `Hosts > Configure > Storage > Storage Adapters > Rescan`
-
-**vVols:**
-- Requires storage vendor VASA provider registered in vCenter
-- `vCenter > Configure > Storage Providers > Add` to register VASA provider
-- Storage containers and protocol endpoints configure automatically after VASA registration
-
-**Key consideration in VCF:** Non-vSAN supplemental storage is **not managed by SDDC Manager** — it is configured directly in vSphere Client and is out of the LCM (lifecycle management) scope.
-
-### Exam Decision Points
-- NFS and FC are **supplemental** — vSAN remains the principal datastore for the workload domain
-- vVols require **VASA provider** registered in vCenter
-- FC requires **HBAs and SAN zoning** — not software-only
-- Supplemental datastores are **not lifecycle managed** by SDDC Manager
-
+<div class="details-body">
+<h3>Key Concepts</h3>
+<p>VCF supports supplemental storage types alongside vSAN for workload domains. Non-vSAN storage can be used for specific workloads that require it (e.g., shared file storage, FC-attached legacy workloads).</p>
+<p><strong>Supported supplemental storage types in VCF 9:</strong></p>
+<ul>
+<li><strong>NFS (v3 and v4.1)</strong> — network file storage, shared across hosts</li>
+<li><strong>vVols (Virtual Volumes)</strong> — VASA provider-based, per-VM storage objects</li>
+<li><strong>Fibre Channel (FC)</strong> — block storage via FC fabric; requires FC HBAs and zoning</li>
+<li><strong>iSCSI</strong> — block storage over IP network</li>
+</ul>
+<p><strong>Configuration path for NFS:</strong><br />
+<code>vSphere Client &gt; Cluster &gt; Configure &gt; Storage &gt; Datastores &gt; Add Datastore &gt; NFS</code></p>
+<p><strong>NFS vmkernel requirements:</strong></p>
+<ul>
+<li>Dedicated vmkernel for NFS traffic recommended</li>
+<li>MTU 9000 (jumbo frames) recommended for NFS performance</li>
+</ul>
+<p><strong>Fibre Channel:</strong></p>
+<ul>
+<li>FC datastores appear automatically after zoning and masking at the storage array</li>
+<li>VMFS 6 is the filesystem for FC and iSCSI block LUNs</li>
+<li>Claim via <code>Hosts &gt; Configure &gt; Storage &gt; Storage Adapters &gt; Rescan</code></li>
+</ul>
+<p><strong>vVols:</strong></p>
+<ul>
+<li>Requires storage vendor VASA provider registered in vCenter</li>
+<li><code>vCenter &gt; Configure &gt; Storage Providers &gt; Add</code> to register VASA provider</li>
+<li>Storage containers and protocol endpoints configure automatically after VASA registration</li>
+</ul>
+<p><strong>Key consideration in VCF:</strong> Non-vSAN supplemental storage is <strong>not managed by SDDC Manager</strong> — it is configured directly in vSphere Client and is out of the LCM (lifecycle management) scope.</p>
+<h3>Exam Decision Points</h3>
+<ul>
+<li>NFS and FC are <strong>supplemental</strong> — vSAN remains the principal datastore for the workload domain</li>
+<li>vVols require <strong>VASA provider</strong> registered in vCenter</li>
+<li>FC requires <strong>HBAs and SAN zoning</strong> — not software-only</li>
+<li>Supplemental datastores are <strong>not lifecycle managed</strong> by SDDC Manager</li>
+</ul>
+</div>
 </details>
 
 ---
 
-<details markdown="1">
+<details>
 <summary><strong>4.4 — Configure vSAN Cross-Cluster Services / Capacity Sharing</strong></summary>
-
-### Key Concepts
-
-**vSAN HCI Mesh** (Cross-cluster Capacity Sharing) allows a vSAN cluster to mount and consume datastore capacity from a **remote vSAN cluster** over the network, without physically sharing hardware.
-
-**Terminology:**
-- **Server cluster** — the cluster that owns and provides vSAN datastore capacity
-- **Client cluster** — the cluster that mounts and consumes capacity from the server cluster
-
-**Requirements:**
-- Both clusters managed by the same vCenter (or linked vCenter)
-- Network connectivity between server and client cluster hosts on the vSAN vmkernel
-- vSAN Enterprise license on server cluster
-
-**Configuration path:**
-`vSphere Client > Server Cluster > Configure > vSAN > Services > Remote Datastores`
-Enable Remote Datastore Access → select the server cluster
-
-On the client cluster side:
-`vSphere Client > Client Cluster > Configure > Datastores > Mount Remote Datastore`
-
-**Storage policy on client cluster:**
-VMs running on the client cluster and using the remote datastore are governed by the **server cluster's policy capabilities**, not the client cluster's. The vSAN storage policy applied to the VM must be compatible with the server cluster.
-
-**Performance implications:**
-- All I/O traverses the network between client and server hosts
-- Latency-sensitive workloads should remain on local vSAN
-- Intended for less latency-sensitive secondary workloads
-
-### Exam Decision Points
-- HCI Mesh is a **read/write** mount (not read-only)
-- Server cluster must have **vSAN Enterprise** license
-- Network between clusters must support **vSAN vmkernel** traffic
-- VM storage policy compatibility is dictated by the **server cluster**
-- Not a replacement for stretched cluster — no site-level HA via HCI Mesh
-
+<div class="details-body">
+<h3>Key Concepts</h3>
+<p><strong>vSAN HCI Mesh</strong> (Cross-cluster Capacity Sharing) allows a vSAN cluster to mount and consume datastore capacity from a <strong>remote vSAN cluster</strong> over the network, without physically sharing hardware.</p>
+<p><strong>Terminology:</strong></p>
+<ul>
+<li><strong>Server cluster</strong> — the cluster that owns and provides vSAN datastore capacity</li>
+<li><strong>Client cluster</strong> — the cluster that mounts and consumes capacity from the server cluster</li>
+</ul>
+<p><strong>Requirements:</strong></p>
+<ul>
+<li>Both clusters managed by the same vCenter (or linked vCenter)</li>
+<li>Network connectivity between server and client cluster hosts on the vSAN vmkernel</li>
+<li>vSAN Enterprise license on server cluster</li>
+</ul>
+<p><strong>Configuration path:</strong><br />
+<code>vSphere Client &gt; Server Cluster &gt; Configure &gt; vSAN &gt; Services &gt; Remote Datastores</code><br />
+Enable Remote Datastore Access → select the server cluster</p>
+<p>On the client cluster side:<br />
+<code>vSphere Client &gt; Client Cluster &gt; Configure &gt; Datastores &gt; Mount Remote Datastore</code></p>
+<p><strong>Storage policy on client cluster:</strong><br />
+VMs running on the client cluster and using the remote datastore are governed by the <strong>server cluster's policy capabilities</strong>, not the client cluster's. The vSAN storage policy applied to the VM must be compatible with the server cluster.</p>
+<p><strong>Performance implications:</strong></p>
+<ul>
+<li>All I/O traverses the network between client and server hosts</li>
+<li>Latency-sensitive workloads should remain on local vSAN</li>
+<li>Intended for less latency-sensitive secondary workloads</li>
+</ul>
+<h3>Exam Decision Points</h3>
+<ul>
+<li>HCI Mesh is a <strong>read/write</strong> mount (not read-only)</li>
+<li>Server cluster must have <strong>vSAN Enterprise</strong> license</li>
+<li>Network between clusters must support <strong>vSAN vmkernel</strong> traffic</li>
+<li>VM storage policy compatibility is dictated by the <strong>server cluster</strong></li>
+<li>Not a replacement for stretched cluster — no site-level HA via HCI Mesh</li>
+</ul>
+</div>
 </details>
 
 ---
 
-<details markdown="1">
+<details>
 <summary><strong>4.5 — Configure vSAN Encryption</strong></summary>
-
-### Key Concepts
-
-vSAN supports **Data-at-Rest Encryption (D@RE)** for cluster-wide encryption of all vSAN datastore data. This is distinct from VM-level encryption (objective 4.18).
-
-**Two encryption modes:**
-- **vSAN Data-at-Rest Encryption** — encrypts data at the vSAN layer (all objects on vSAN)
-- **vSAN Data-in-Transit Encryption** — encrypts replication traffic between vSAN nodes
-
-**Prerequisites:**
-- External KMS (KMIP 1.1) **or** Native Key Provider configured in vCenter
-- vSphere Enterprise Plus license (for VM encryption) — vSAN encryption uses the same key infrastructure
-- All hosts in the cluster must support encryption
-
-**Enabling D@RE:**
-`vSphere Client > Cluster > Configure > vSAN > Services > Data-At-Rest Encryption > Edit`
-
-Toggle on Data-at-Rest Encryption. Select the key provider. vCenter will push keys to all hosts. The cluster will **reformat all disks** — this is a **disruptive operation** if data already exists.
-
-> ⚠️ **Enabling encryption on an existing populated cluster requires a disk reformat** — all data must be migrated off first or the cluster must be redeployed.
-
-**Enabling Data-in-Transit Encryption:**
-Same path > Data-In-Transit Encryption toggle. This encrypts host-to-host vSAN traffic using AES-256-GCM. Non-disruptive to enable/disable.
-
-**Key rotation:**
-`Cluster > Configure > vSAN > Services > Data-At-Rest Encryption > Rekey`
-- **Shallow rekey** — replaces KEK only (online, non-disruptive)
-- **Deep rekey** — replaces DEK and KEK (disruptive, requires disk reformat)
-
-### Exam Decision Points
-- vSAN D@RE is **cluster-wide** — cannot encrypt individual VMs differently via vSAN encryption (use VM encryption for per-VM)
-- Enabling D@RE on **existing data** = **disruptive** (data must be migrated off or cluster rebuilt)
-- Data-in-Transit encryption = **non-disruptive** to enable
-- Requires KMS or Native Key Provider — same infrastructure as VM encryption
-- **Shallow rekey** = online; **deep rekey** = disruptive
-
+<div class="details-body">
+<h3>Key Concepts</h3>
+<p>vSAN supports <strong>Data-at-Rest Encryption (D@RE)</strong> for cluster-wide encryption of all vSAN datastore data. This is distinct from VM-level encryption (objective 4.18).</p>
+<p><strong>Two encryption modes:</strong></p>
+<ul>
+<li><strong>vSAN Data-at-Rest Encryption</strong> — encrypts data at the vSAN layer (all objects on vSAN)</li>
+<li><strong>vSAN Data-in-Transit Encryption</strong> — encrypts replication traffic between vSAN nodes</li>
+</ul>
+<p><strong>Prerequisites:</strong></p>
+<ul>
+<li>External KMS (KMIP 1.1) <strong>or</strong> Native Key Provider configured in vCenter</li>
+<li>vSphere Enterprise Plus license (for VM encryption) — vSAN encryption uses the same key infrastructure</li>
+<li>All hosts in the cluster must support encryption</li>
+</ul>
+<p><strong>Enabling D@RE:</strong><br />
+<code>vSphere Client &gt; Cluster &gt; Configure &gt; vSAN &gt; Services &gt; Data-At-Rest Encryption &gt; Edit</code></p>
+<p>Toggle on Data-at-Rest Encryption. Select the key provider. vCenter will push keys to all hosts. The cluster will <strong>reformat all disks</strong> — this is a <strong>disruptive operation</strong> if data already exists.</p>
+<blockquote>
+<p>⚠️ <strong>Enabling encryption on an existing populated cluster requires a disk reformat</strong> — all data must be migrated off first or the cluster must be redeployed.</p>
+</blockquote>
+<p><strong>Enabling Data-in-Transit Encryption:</strong><br />
+Same path &gt; Data-In-Transit Encryption toggle. This encrypts host-to-host vSAN traffic using AES-256-GCM. Non-disruptive to enable/disable.</p>
+<p><strong>Key rotation:</strong><br />
+<code>Cluster &gt; Configure &gt; vSAN &gt; Services &gt; Data-At-Rest Encryption &gt; Rekey</code><br />
+- <strong>Shallow rekey</strong> — replaces KEK only (online, non-disruptive)<br />
+- <strong>Deep rekey</strong> — replaces DEK and KEK (disruptive, requires disk reformat)</p>
+<h3>Exam Decision Points</h3>
+<ul>
+<li>vSAN D@RE is <strong>cluster-wide</strong> — cannot encrypt individual VMs differently via vSAN encryption (use VM encryption for per-VM)</li>
+<li>Enabling D@RE on <strong>existing data</strong> = <strong>disruptive</strong> (data must be migrated off or cluster rebuilt)</li>
+<li>Data-in-Transit encryption = <strong>non-disruptive</strong> to enable</li>
+<li>Requires KMS or Native Key Provider — same infrastructure as VM encryption</li>
+<li><strong>Shallow rekey</strong> = online; <strong>deep rekey</strong> = disruptive</li>
+</ul>
+</div>
 </details>
 
 ---
 
-<details markdown="1">
+<details>
 <summary><strong>4.6 — Configure vSAN Data Protection</strong></summary>
-
-### Key Concepts
-
-vSAN data protection encompasses snapshot capabilities (native and third-party), backup integration, and file services protection.
-
-**vSAN Snapshots (vSphere Snapshots on vSAN):**
-- Standard vSphere snapshots work on vSAN, stored as sparse delta VMDKs
-- vSAN ESA introduces **vSAN Native Snapshots** — block-level, space-efficient, better performance than traditional sparse snapshots
-- vSAN ESA native snapshots are managed via storage policy
-
-**vSAN Native Snapshot policy capability (ESA only):**
-Configure via storage policy: enable `vSAN Snapshot` capability, specify snapshot interval and retention.
-
-`vSphere Client > Home > Policies and Profiles > VM Storage Policies > Create Policy > vSAN Rules > Snapshot`
-
-**Third-party backup integration:**
-vSAN supports VADP (vStorage APIs for Data Protection) — VMware's backup API used by products like Veeam, Commvault, Cohesity. VMs on vSAN are backed up at the VMDK level using VADP Changed Block Tracking (CBT).
-
-**vSAN File Services:**
-vSAN can expose NFS v3/v4.1 and SMB file shares from the vSAN datastore for use by non-VM workloads.
-
-`vSphere Client > Cluster > Configure > vSAN > Services > File Services`
-
-Requires:
-- vSAN Enterprise license
-- Dedicated File Service Agent VMs (FAs) deployed per host
-- IP addresses for FA VMs on a designated network
-
-### Exam Decision Points
-- vSAN ESA Native Snapshots = **block-level**, space-efficient, managed via **storage policy**
-- vSAN OSA snapshots = traditional vSphere sparse delta VMDKs
-- VADP (CBT) is the standard backup API — vendor-agnostic
-- File Services requires **Enterprise license** and FA VMs deployed
-- Data protection ≠ encryption — these are independent features
-
+<div class="details-body">
+<h3>Key Concepts</h3>
+<p>vSAN data protection encompasses snapshot capabilities (native and third-party), backup integration, and file services protection.</p>
+<p><strong>vSAN Snapshots (vSphere Snapshots on vSAN):</strong></p>
+<ul>
+<li>Standard vSphere snapshots work on vSAN, stored as sparse delta VMDKs</li>
+<li>vSAN ESA introduces <strong>vSAN Native Snapshots</strong> — block-level, space-efficient, better performance than traditional sparse snapshots</li>
+<li>vSAN ESA native snapshots are managed via storage policy</li>
+</ul>
+<p><strong>vSAN Native Snapshot policy capability (ESA only):</strong><br />
+Configure via storage policy: enable <code>vSAN Snapshot</code> capability, specify snapshot interval and retention.</p>
+<p><code>vSphere Client &gt; Home &gt; Policies and Profiles &gt; VM Storage Policies &gt; Create Policy &gt; vSAN Rules &gt; Snapshot</code></p>
+<p><strong>Third-party backup integration:</strong><br />
+vSAN supports VADP (vStorage APIs for Data Protection) — VMware's backup API used by products like Veeam, Commvault, Cohesity. VMs on vSAN are backed up at the VMDK level using VADP Changed Block Tracking (CBT).</p>
+<p><strong>vSAN File Services:</strong><br />
+vSAN can expose NFS v3/v4.1 and SMB file shares from the vSAN datastore for use by non-VM workloads.</p>
+<p><code>vSphere Client &gt; Cluster &gt; Configure &gt; vSAN &gt; Services &gt; File Services</code></p>
+<p>Requires:</p>
+<ul>
+<li>vSAN Enterprise license</li>
+<li>Dedicated File Service Agent VMs (FAs) deployed per host</li>
+<li>IP addresses for FA VMs on a designated network</li>
+</ul>
+<h3>Exam Decision Points</h3>
+<ul>
+<li>vSAN ESA Native Snapshots = <strong>block-level</strong>, space-efficient, managed via <strong>storage policy</strong></li>
+<li>vSAN OSA snapshots = traditional vSphere sparse delta VMDKs</li>
+<li>VADP (CBT) is the standard backup API — vendor-agnostic</li>
+<li>File Services requires <strong>Enterprise license</strong> and FA VMs deployed</li>
+<li>Data protection ≠ encryption — these are independent features</li>
+</ul>
+</div>
 </details>
 
 ---
 
-<details markdown="1">
+<details>
 <summary><strong>4.7 — Perform Day 2 Operations on a vSAN Cluster</strong></summary>
-
-### Key Concepts
-
-Day 2 operations cover the ongoing management tasks after initial vSAN cluster deployment.
-
-**Adding capacity:**
-- Add new hosts via SDDC Manager (preferred in VCF) — auto-claims disks
-- Add disks to existing hosts: `vSphere Client > Host > Configure > vSAN > Disk Management > Claim Disks`
-- Capacity rebalances automatically when new disks are claimed
-
-**Removing a host from a vSAN cluster:**
-1. Place host in Maintenance Mode — select **Full Data Migration** (moves all data off)
-2. Wait for full data migration to complete (can take hours)
-3. Remove host from cluster
-4. Remove from vSAN (SDDC Manager > Workload Domain > Remove Host)
-
-**Maintenance Mode data migration options:**
-| Option | Data Movement | Use When |
-|---|---|---|
-| Full Data Migration | All data moved off host | Permanent removal |
-| Ensure Accessibility | Minimum data moved for compliance | Short maintenance |
-| No Data Migration | No movement | Temporary maintenance with sufficient redundancy |
-
-**Replacing a failed disk:**
-1. Failed disk shown in `Cluster > Monitor > vSAN > Physical Disks`
-2. Remove disk from disk group: `Configure > vSAN > Disk Management > Remove`
-3. Physically replace disk
-4. Re-claim the new disk
-
-**Rebalancing:**
-`Cluster > Configure > vSAN > Services > Rebalance`
-Manual rebalance redistributes data more evenly across disks. Automatic rebalancing triggers when imbalance exceeds 30%.
-
-**vSAN Health:**
-`Cluster > Monitor > vSAN > Health` — provides hardware compatibility, network, performance, and data integrity checks. Run health check before and after any maintenance operation.
-
-**Resynchronization monitoring:**
-`Cluster > Monitor > vSAN > Resyncing Components` — view active resync tasks and estimated completion.
-
-### Exam Decision Points
-- Always use **Full Data Migration** when permanently removing a host
-- **Ensure Accessibility** is safe for short-term maintenance if cluster has sufficient redundancy
-- **No Data Migration** is risky — only use if you're confident about redundancy
-- Rebalancing is **non-disruptive** but generates I/O — avoid during peak hours
-- vSAN Health check is the first tool to use for any vSAN issue
-
+<div class="details-body">
+<h3>Key Concepts</h3>
+<p>Day 2 operations cover the ongoing management tasks after initial vSAN cluster deployment.</p>
+<p><strong>Adding capacity:</strong></p>
+<ul>
+<li>Add new hosts via SDDC Manager (preferred in VCF) — auto-claims disks</li>
+<li>Add disks to existing hosts: <code>vSphere Client &gt; Host &gt; Configure &gt; vSAN &gt; Disk Management &gt; Claim Disks</code></li>
+<li>Capacity rebalances automatically when new disks are claimed</li>
+</ul>
+<p><strong>Removing a host from a vSAN cluster:</strong><br />
+1. Place host in Maintenance Mode — select <strong>Full Data Migration</strong> (moves all data off)<br />
+2. Wait for full data migration to complete (can take hours)<br />
+3. Remove host from cluster<br />
+4. Remove from vSAN (SDDC Manager &gt; Workload Domain &gt; Remove Host)</p>
+<p><strong>Maintenance Mode data migration options:</strong><br />
+| Option | Data Movement | Use When |<br />
+|---|---|---|<br />
+| Full Data Migration | All data moved off host | Permanent removal |<br />
+| Ensure Accessibility | Minimum data moved for compliance | Short maintenance |<br />
+| No Data Migration | No movement | Temporary maintenance with sufficient redundancy |</p>
+<p><strong>Replacing a failed disk:</strong><br />
+1. Failed disk shown in <code>Cluster &gt; Monitor &gt; vSAN &gt; Physical Disks</code><br />
+2. Remove disk from disk group: <code>Configure &gt; vSAN &gt; Disk Management &gt; Remove</code><br />
+3. Physically replace disk<br />
+4. Re-claim the new disk</p>
+<p><strong>Rebalancing:</strong><br />
+<code>Cluster &gt; Configure &gt; vSAN &gt; Services &gt; Rebalance</code><br />
+Manual rebalance redistributes data more evenly across disks. Automatic rebalancing triggers when imbalance exceeds 30%.</p>
+<p><strong>vSAN Health:</strong><br />
+<code>Cluster &gt; Monitor &gt; vSAN &gt; Health</code> — provides hardware compatibility, network, performance, and data integrity checks. Run health check before and after any maintenance operation.</p>
+<p><strong>Resynchronization monitoring:</strong><br />
+<code>Cluster &gt; Monitor &gt; vSAN &gt; Resyncing Components</code> — view active resync tasks and estimated completion.</p>
+<h3>Exam Decision Points</h3>
+<ul>
+<li>Always use <strong>Full Data Migration</strong> when permanently removing a host</li>
+<li><strong>Ensure Accessibility</strong> is safe for short-term maintenance if cluster has sufficient redundancy</li>
+<li><strong>No Data Migration</strong> is risky — only use if you're confident about redundancy</li>
+<li>Rebalancing is <strong>non-disruptive</strong> but generates I/O — avoid during peak hours</li>
+<li>vSAN Health check is the first tool to use for any vSAN issue</li>
+</ul>
+</div>
 </details>
 
 ---
 
-<details markdown="1">
+<details>
 <summary><strong>4.8 — Perform Day 2 Operations on a vSAN Stretched Cluster</strong></summary>
-
-### Key Concepts
-
-Stretched cluster Day 2 operations have additional considerations due to the site topology.
-
-**Adding hosts to a stretched cluster:**
-- Add to either preferred or secondary fault domain, maintaining **equal host counts** per site
-- `vSphere Client > Cluster > Configure > vSAN > Fault Domains` to assign new hosts
-
-**Witness host replacement:**
-If the witness host fails or needs replacement:
-1. Deploy a new witness host (OVA from Broadcom support portal or CDN)
-2. Configure witness vmkernel with correct routing to both sites
-3. `Cluster > Configure > vSAN > Fault Domains > Edit Stretched Cluster` to swap witness
-
-> ⚠️ During witness replacement, the cluster has **no tolerance for a site failure** — plan carefully.
-
-**Maintenance on a site:**
-- Place all hosts in one site into Maintenance Mode simultaneously (they must all use **Ensure Accessibility** or **No Data Migration** together — **not Full Data Migration** for stretched clusters)
-- Cluster will run from surviving site + witness
-- Avoid extended single-site operation
-
-**Storage policy for stretched clusters:**
-Ensure VMs use a policy with `PFTT=1` (Primary Failures to Tolerate between sites). Without this, a full site failure will cause data loss.
-
-**Failure scenarios:**
-| Failure | Result |
-|---|---|
-| Preferred site fails | VMs restart on secondary; cluster runs on secondary + witness |
-| Secondary site fails | VMs continue on preferred; cluster runs on preferred + witness |
-| Witness fails | Cluster continues but no tolerance for site failure |
-| Preferred site + witness fail | Cluster goes read-only (no quorum) |
-| Both data sites fail | Cluster unavailable |
-
-### Exam Decision Points
-- Stretched clusters must have **equal hosts per site**
-- Witness replacement = **zero tolerance window** for site failure during procedure
-- Do **not** use Full Data Migration in maintenance mode for stretched clusters
-- `PFTT=1` in storage policy is required for true site-level HA
-- Witness handles **quorum only** — no VM data stored on witness
-
+<div class="details-body">
+<h3>Key Concepts</h3>
+<p>Stretched cluster Day 2 operations have additional considerations due to the site topology.</p>
+<p><strong>Adding hosts to a stretched cluster:</strong></p>
+<ul>
+<li>Add to either preferred or secondary fault domain, maintaining <strong>equal host counts</strong> per site</li>
+<li><code>vSphere Client &gt; Cluster &gt; Configure &gt; vSAN &gt; Fault Domains</code> to assign new hosts</li>
+</ul>
+<p><strong>Witness host replacement:</strong><br />
+If the witness host fails or needs replacement:<br />
+1. Deploy a new witness host (OVA from Broadcom support portal or CDN)<br />
+2. Configure witness vmkernel with correct routing to both sites<br />
+3. <code>Cluster &gt; Configure &gt; vSAN &gt; Fault Domains &gt; Edit Stretched Cluster</code> to swap witness</p>
+<blockquote>
+<p>⚠️ During witness replacement, the cluster has <strong>no tolerance for a site failure</strong> — plan carefully.</p>
+</blockquote>
+<p><strong>Maintenance on a site:</strong></p>
+<ul>
+<li>Place all hosts in one site into Maintenance Mode simultaneously (they must all use <strong>Ensure Accessibility</strong> or <strong>No Data Migration</strong> together — <strong>not Full Data Migration</strong> for stretched clusters)</li>
+<li>Cluster will run from surviving site + witness</li>
+<li>Avoid extended single-site operation</li>
+</ul>
+<p><strong>Storage policy for stretched clusters:</strong><br />
+Ensure VMs use a policy with <code>PFTT=1</code> (Primary Failures to Tolerate between sites). Without this, a full site failure will cause data loss.</p>
+<p><strong>Failure scenarios:</strong><br />
+| Failure | Result |<br />
+|---|---|<br />
+| Preferred site fails | VMs restart on secondary; cluster runs on secondary + witness |<br />
+| Secondary site fails | VMs continue on preferred; cluster runs on preferred + witness |<br />
+| Witness fails | Cluster continues but no tolerance for site failure |<br />
+| Preferred site + witness fail | Cluster goes read-only (no quorum) |<br />
+| Both data sites fail | Cluster unavailable |</p>
+<h3>Exam Decision Points</h3>
+<ul>
+<li>Stretched clusters must have <strong>equal hosts per site</strong></li>
+<li>Witness replacement = <strong>zero tolerance window</strong> for site failure during procedure</li>
+<li>Do <strong>not</strong> use Full Data Migration in maintenance mode for stretched clusters</li>
+<li><code>PFTT=1</code> in storage policy is required for true site-level HA</li>
+<li>Witness handles <strong>quorum only</strong> — no VM data stored on witness</li>
+</ul>
+</div>
 </details>
 
 ---
 
-<details markdown="1">
+<details>
 <summary><strong>4.9 — Manage vSAN Storage Policies</strong></summary>
-
-### Key Concepts
-
-vSAN storage policies are the primary mechanism to define **reliability, performance, and service level** for VMs and VMDKs on vSAN.
-
-**Policy-Driven Storage:**
-Every object on vSAN (VM home, each VMDK, swap file) has a storage policy applied. The default is `vSAN Default Storage Policy`.
-
-**Key policy capabilities:**
-
-| Capability | Description |
-|---|---|
-| **Failures to Tolerate (FTT)** | How many host/disk failures can be tolerated |
-| **RAID type** | RAID-1 (mirroring) or RAID-5/6 (erasure coding) |
-| **Number of Disk Stripes** | Stripes per object across capacity disks (performance) |
-| **Flash Read Cache Reservation** | % of object size reserved as read cache (OSA only) |
-| **Object Space Reservation** | % of space provisioned as thick (0% = thin) |
-| **Checksum Disabled** | Disables end-to-end checksum (not recommended) |
-| **Force Provisioning** | Provision even if policy cannot be satisfied |
-| **IOPS Limit** | Per-disk IOPS cap for QoS |
-
-**FTT and RAID combinations:**
-
-| FTT | RAID | Min Hosts | Space Overhead |
-|---|---|---|---|
-| 1 | RAID-1 | 3 | 2x |
-| 1 | RAID-5 | 4 | 1.33x |
-| 2 | RAID-1 | 5 | 3x |
-| 2 | RAID-6 | 6 | 1.5x |
-
-**Creating a policy:**
-`vSphere Client > Home > Policies and Profiles > VM Storage Policies > Create`
-
-1. Select vSAN rules
-2. Configure FTT, RAID type, and other capabilities
-3. Check compatibility (which datastores satisfy the policy)
-4. Apply to VMs via right-click > VM Policies > Edit VM Storage Policy
-
-**Checking compliance:**
-`Cluster > Monitor > vSAN > Compliance` — shows which VMs/objects are compliant, non-compliant, or out of date.
-
-**Policy non-compliance:**
-Occurs when the cluster cannot satisfy the policy (e.g., not enough hosts for FTT=2). The object continues to run but with reduced redundancy. Resolve by adding hosts, adjusting policy, or fixing failed hardware.
-
-**Applying policies in bulk:**
-`Home > Policies and Profiles > VM Storage Policies > [Policy] > VMs and Templates` tab to see all objects using a policy. Use PowerCLI for bulk reassignment:
-
-```powershell
-$policy = Get-SpbmStoragePolicy -Name "vSAN FTT=1 RAID-5"
+<div class="details-body">
+<h3>Key Concepts</h3>
+<p>vSAN storage policies are the primary mechanism to define <strong>reliability, performance, and service level</strong> for VMs and VMDKs on vSAN.</p>
+<p><strong>Policy-Driven Storage:</strong><br />
+Every object on vSAN (VM home, each VMDK, swap file) has a storage policy applied. The default is <code>vSAN Default Storage Policy</code>.</p>
+<p><strong>Key policy capabilities:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Capability</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Failures to Tolerate (FTT)</strong></td>
+<td>How many host/disk failures can be tolerated</td>
+</tr>
+<tr>
+<td><strong>RAID type</strong></td>
+<td>RAID-1 (mirroring) or RAID-5/6 (erasure coding)</td>
+</tr>
+<tr>
+<td><strong>Number of Disk Stripes</strong></td>
+<td>Stripes per object across capacity disks (performance)</td>
+</tr>
+<tr>
+<td><strong>Flash Read Cache Reservation</strong></td>
+<td>% of object size reserved as read cache (OSA only)</td>
+</tr>
+<tr>
+<td><strong>Object Space Reservation</strong></td>
+<td>% of space provisioned as thick (0% = thin)</td>
+</tr>
+<tr>
+<td><strong>Checksum Disabled</strong></td>
+<td>Disables end-to-end checksum (not recommended)</td>
+</tr>
+<tr>
+<td><strong>Force Provisioning</strong></td>
+<td>Provision even if policy cannot be satisfied</td>
+</tr>
+<tr>
+<td><strong>IOPS Limit</strong></td>
+<td>Per-disk IOPS cap for QoS</td>
+</tr>
+</tbody>
+</table>
+<p><strong>FTT and RAID combinations:</strong></p>
+<table>
+<thead>
+<tr>
+<th>FTT</th>
+<th>RAID</th>
+<th>Min Hosts</th>
+<th>Space Overhead</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>RAID-1</td>
+<td>3</td>
+<td>2x</td>
+</tr>
+<tr>
+<td>1</td>
+<td>RAID-5</td>
+<td>4</td>
+<td>1.33x</td>
+</tr>
+<tr>
+<td>2</td>
+<td>RAID-1</td>
+<td>5</td>
+<td>3x</td>
+</tr>
+<tr>
+<td>2</td>
+<td>RAID-6</td>
+<td>6</td>
+<td>1.5x</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Creating a policy:</strong><br />
+<code>vSphere Client &gt; Home &gt; Policies and Profiles &gt; VM Storage Policies &gt; Create</code></p>
+<ol>
+<li>Select vSAN rules</li>
+<li>Configure FTT, RAID type, and other capabilities</li>
+<li>Check compatibility (which datastores satisfy the policy)</li>
+<li>Apply to VMs via right-click &gt; VM Policies &gt; Edit VM Storage Policy</li>
+</ol>
+<p><strong>Checking compliance:</strong><br />
+<code>Cluster &gt; Monitor &gt; vSAN &gt; Compliance</code> — shows which VMs/objects are compliant, non-compliant, or out of date.</p>
+<p><strong>Policy non-compliance:</strong><br />
+Occurs when the cluster cannot satisfy the policy (e.g., not enough hosts for FTT=2). The object continues to run but with reduced redundancy. Resolve by adding hosts, adjusting policy, or fixing failed hardware.</p>
+<p><strong>Applying policies in bulk:</strong><br />
+<code>Home &gt; Policies and Profiles &gt; VM Storage Policies &gt; [Policy] &gt; VMs and Templates</code> tab to see all objects using a policy. Use PowerCLI for bulk reassignment:</p>
+<pre><code class="language-powershell">$policy = Get-SpbmStoragePolicy -Name &quot;vSAN FTT=1 RAID-5&quot;
 Get-VM | Set-SpbmEntityConfiguration -StoragePolicy $policy
-```
-
-### Exam Decision Points
-- **FTT=1 RAID-5 requires 4 hosts** (not 3)
-- **RAID-6 requires 6 hosts minimum**
-- Force Provisioning = VMs provision even if non-compliant (use cautiously)
-- Object Space Reservation 0% = thin provisioned; 100% = thick
-- Flash Read Cache Reservation is **OSA only** — no equivalent in ESA
-- Always check **Compliance** view after policy changes or host maintenance
-
+</code></pre>
+<h3>Exam Decision Points</h3>
+<ul>
+<li><strong>FTT=1 RAID-5 requires 4 hosts</strong> (not 3)</li>
+<li><strong>RAID-6 requires 6 hosts minimum</strong></li>
+<li>Force Provisioning = VMs provision even if non-compliant (use cautiously)</li>
+<li>Object Space Reservation 0% = thin provisioned; 100% = thick</li>
+<li>Flash Read Cache Reservation is <strong>OSA only</strong> — no equivalent in ESA</li>
+<li>Always check <strong>Compliance</strong> view after policy changes or host maintenance</li>
+</ul>
+</div>
 </details>
 
 ---
