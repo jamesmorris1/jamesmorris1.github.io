@@ -33,13 +33,8 @@ title: Articles
 </style>
 
 {% for post in site.posts %}
-  <div class="article-box">
-    <h3>
-      <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-      {% if post.series %}
-        <span class="series-badge">Series: Part {{ post.series_part }}</span>
-      {% endif %}
-    </h3>
-    <p class="article-date">{{ post.date | date: "%B %d, %Y" }}</p>
-  </div>
+<div class="article-box">
+<h3><a href="{{ post.url | relative_url }}">{{ post.title }}</a>{% if post.series %} <span class="series-badge">Series: Part {{ post.series_part }}</span>{% endif %}</h3>
+<p class="article-date">{{ post.date | date: "%B %d, %Y" }}</p>
+</div>
 {% endfor %}
