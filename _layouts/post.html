@@ -2,8 +2,6 @@
 layout: default
 ---
 
-{% include nav.html %}
-
 <article class="post-article">
 
   <header class="post-header">
@@ -97,7 +95,6 @@ layout: default
     font-family: 'SFMono-Regular', Consolas, monospace;
   }
 
-  /* Post content styling */
   .post-content h1,
   .post-content h2 {
     color: #155764;
@@ -160,7 +157,6 @@ layout: default
     padding: 0;
   }
 
-  /* Collapsible objective containers */
   .post-content details {
     border: 1px solid #cce5ea;
     border-radius: 6px;
@@ -209,7 +205,10 @@ layout: default
     border-color: #155764;
   }
 
-  /* Blockquotes / warnings */
+  .details-body {
+    padding: 0.5rem 0;
+  }
+
   .post-content blockquote {
     border-left: 3px solid #e8a000;
     background: #fffbf0;
@@ -232,9 +231,7 @@ layout: default
     font-weight: 500;
   }
 
-  .back-link:hover {
-    text-decoration: underline;
-  }
+  .back-link:hover { text-decoration: underline; }
 
   @media (max-width: 640px) {
     .post-article { padding: 0 1rem 3rem; }

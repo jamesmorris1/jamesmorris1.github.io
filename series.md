@@ -6,136 +6,94 @@ title: Series
 # Article Series
 
 <style>
-.series-box {
+.series-card {
   border: 1px solid #ddd;
-  padding: 15px;
-  margin-bottom: 15px;
-  border-radius: 5px;
-  background-color: #f9f9f9;
+  border-radius: 6px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  background: #f9f9f9;
 }
-.series-box h3 {
+.series-card h2 {
   margin-top: 0;
-  font-size: 1.1em;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  font-size: 1.2em;
+  color: #155764;
 }
-.series-box h3:hover {
-  color: #159957;
+.series-meta {
+  font-size: 0.85em;
+  color: #666;
+  margin-bottom: 12px;
 }
 .series-description {
-  color: #666;
-  font-size: 0.9em;
-  margin: 10px 0;
+  font-size: 0.95em;
+  color: #444;
+  margin-bottom: 16px;
+  line-height: 1.5;
 }
-.series-details {
-  display: none;
-  margin-top: 15px;
-  padding-top: 15px;
-  border-top: 1px solid #ddd;
+.series-parts {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
 }
-.series-details.open {
-  display: block;
+.series-parts li {
+  padding: 8px 14px;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 0.88em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
 }
-.series-details ul {
-  margin: 10px 0;
-  padding-left: 20px;
+.series-parts li:last-child {
+  border-bottom: none;
 }
-.series-details li {
-  margin: 8px 0;
+.series-parts li:nth-child(even) {
+  background: #f5f5f5;
 }
-.toggle-icon {
+.part-num {
+  color: #aaa;
   font-size: 0.8em;
-  color: #159957;
+  min-width: 20px;
+  text-align: right;
 }
-.coming-soon {
-  color: #999;
-  font-style: italic;
-  font-size: 0.85em;
+.series-parts a {
+  color: #1a6070;
+  text-decoration: none;
+}
+.series-parts a:hover {
+  text-decoration: underline;
+}
+.series-start {
+  display: inline-block;
+  background: #159957;
+  color: #fff;
+  padding: 7px 18px;
+  border-radius: 4px;
+  font-size: 0.88em;
+  font-weight: 600;
+  text-decoration: none;
+}
+.series-start:hover {
+  background: #0f7a42;
+  color: #fff;
+  text-decoration: none;
 }
 </style>
 
-<div class="series-box">
-<h3 onclick="toggleSeries('vcf-networking')">
-VCF Multi-Tenant Networking Deep Dive
-<span class="toggle-icon" id="icon-vcf-networking">▼</span>
-</h3>
-<p class="series-description">
-A comprehensive series exploring VMware Cloud Foundation's multi-tenant networking architecture, breaking down how VCF constructs map to NSX-T components.
-</p>
-
-<div class="series-details" id="vcf-networking">
-<h4>Articles in this series:</h4>
-<ul>
-<li>
-<strong>Part 1: Provider Gateway vs NSX-T Tier-0: Understanding the Foundation</strong> <span class="coming-soon">(Coming Soon)</span>
-<ul>
-<li>What is a Provider Gateway in VCF</li>
-<li>How it maps to Tier-0 gateways</li>
-<li>Edge cluster connectivity</li>
-<li>BGP peering configuration</li>
-</ul>
-</li>
-
-<li>
-<strong>Part 2: IP Spaces and IP Blocks: VCF's Address Management</strong> <span class="coming-soon">(Coming Soon)</span>
-<ul>
-<li>What are IP Spaces</li>
-<li>IP Block allocation and reachability</li>
-<li>Provider vs Organization IP allocations</li>
-<li>Best practices for IP planning</li>
-</ul>
-</li>
-
-<li>
-<strong>Part 3: Transit Gateway: The Organization's Routing Hub</strong> <span class="coming-soon">(Coming Soon)</span>
-<ul>
-<li>What the Transit Gateway does</li>
-<li>SNAT configuration and external connectivity</li>
-<li>Private-TGW IP blocks explained</li>
-<li>Connecting multiple VPCs</li>
-</ul>
-</li>
-
-<li>
-<strong>Part 4: VPC and Subnets: Building Tenant Networks</strong> <span class="coming-soon">(Coming Soon)</span>
-<ul>
-<li>Private VPC construct in VCF</li>
-<li>VPC Gateway role</li>
-<li>Subnet carving and allocation</li>
-<li>Isolation and security boundaries</li>
-</ul>
-</li>
-
-<li>
-<strong>Part 5: Provider vs Organization: Network Creation Responsibilities</strong> <span class="coming-soon">(Coming Soon)</span>
-<ul>
-<li>Clear separation of duties</li>
-<li>What providers must configure</li>
-<li>What organizations control</li>
-<li>Complete network flow walkthrough</li>
-</ul>
-</li>
-</ul>
+<div class="series-card">
+<h2>VCAP-ADMIN VCF 9.0 Study Guide (3V0-11.26)</h2>
+<p class="series-meta">7 parts &nbsp;·&nbsp; Updated March 2026 &nbsp;·&nbsp; Blueprint revision January 2026</p>
+<p class="series-description">Complete study notes covering all 60 blueprint objectives for the VCAP VMware Cloud Foundation Administrator exam. Covers vSAN, vSphere compute/network/security, VCF Automation, Supervisor &amp; VKS, VCF Operations, Fleet Management, and NSX.</p>
+<ol class="series-parts">
+<li><span class="part-num">0</span><a href="/certification/vcf/vcap/2026/03/20/vcap-admin-vcf9-study-guide-index.html">Study Guide Index — All 60 Objectives</a></li>
+<li><span class="part-num">1</span><a href="/certification/vcf/vcap/2026/03/20/vcap-admin-vcf9-s1-vsan.html">vSAN — Objectives 4.1–4.9</a></li>
+<li><span class="part-num">2</span><a href="/certification/vcf/vcap/2026/03/20/vcap-admin-vcf9-s2-vsphere.html">vSphere Compute, Network &amp; Security — Objectives 4.10–4.18</a></li>
+<li><span class="part-num">3</span><a href="/certification/vcf/vcap/2026/03/20/vcap-admin-vcf9-s3-automation.html">VCF Automation Provider &amp; Org — Objectives 4.19–4.29</a></li>
+<li><span class="part-num">4</span><a href="/certification/vcf/vcap/2026/03/20/vcap-admin-vcf9-s4-supervisor.html">Supervisor &amp; VKS — Objectives 4.30–4.34</a></li>
+<li><span class="part-num">5</span><a href="/certification/vcf/vcap/2026/03/20/vcap-admin-vcf9-s5-operations.html">VCF Operations &amp; Fleet — Objectives 4.35–4.47</a></li>
+<li><span class="part-num">6</span><a href="/certification/vcf/vcap/2026/03/20/vcap-admin-vcf9-s6-nsx.html">NSX — Objectives 4.48–4.60</a></li>
+</ol>
+<a href="/certification/vcf/vcap/2026/03/20/vcap-admin-vcf9-study-guide-index.html" class="series-start">Start Series →</a>
 </div>
-</div>
-
-<script>
-function toggleSeries(seriesId) {
-  var details = document.getElementById(seriesId);
-  var icon = document.getElementById('icon-' + seriesId);
-  
-  if (details.classList.contains('open')) {
-    details.classList.remove('open');
-    icon.textContent = '▼';
-  } else {
-    details.classList.add('open');
-    icon.textContent = '▲';
-  }
-}
-</script>
-
----
-
-*New series and articles added regularly. Check back soon!*
